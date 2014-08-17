@@ -79,11 +79,11 @@ SR830Ampl <: SR830Output
 SR830Freq <: SR830Output
 
 ### ref voltage Output
-function source(ch::SR830Ampl, val::Float)
+function source(ch::SR830Ampl, val::Real)
 	ch.val = val
 	write(ch.instr, "SLVL $val")
 end
-function source(ch::SR830Freq, val::Float)
+function source(ch::SR830Freq, val::Real)
 	ch.val = val
 	write(ch.instr, "FREQ $val")
 end

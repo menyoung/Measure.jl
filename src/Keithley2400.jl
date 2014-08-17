@@ -64,7 +64,7 @@ end
 
 Keithley2400Vsrc <: Output
 
-function source(ch::Keithley2400Vsrc, val::Float)
+function source(ch::Keithley2400Vsrc, val::Real)
 	ch.val = val
 	write(ch.instr, "SOUR:VOLT $val")
 end

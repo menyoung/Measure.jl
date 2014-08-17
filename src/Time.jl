@@ -12,7 +12,7 @@ TimeChannel() = TimeChannel(time())
 
 TimeChannel <: Output
 
-function source(ch::TimeChannel, val::Float)
+function source(ch::TimeChannel, val::Real)
 	if val < eps()
 		ch.t0 = time()
 	else
