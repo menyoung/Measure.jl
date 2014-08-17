@@ -5,9 +5,9 @@ export Agilent34401a, Agilent34401aVDC, measure, trigget, fetch
 type Agilent34401a
 	vi::PyObject 	# this is the GpibInstrument object!
 	filter::Int 	# filter speed
-	range::Float 	# 0 for autorange
+	range::Float64 	# 0 for autorange
 	imp::Bool 		# input impedance is 10M (0) or high (1)
-	tc::Int 		# integration time in PLCs
+	tc::Int32 		# integration time in PLCs
 end
 
 Agilent34401a <: GpibInstrument
@@ -15,7 +15,7 @@ Agilent34401a <: GpibInstrument
 type Agilent34401aVDC
 	instr::Agilent34401a
 	label::Label
-	val::Float
+	val::Float64
 end
 
 Agilent34401aVDC <: BufferedInput

@@ -7,8 +7,8 @@ abstract Keithley2400 <: GpibInstrument
 
 type Keithley2400Vb # source voltage, measure current
 	vi::PyObject 	# this is the GpibInstrument object!
-	range::Float 	# output range
-	cmpl::Float 	# compliance current
+	range::Float64 	# output range
+	cmpl::Float64 	# compliance current
 end
 
 # constructor takes VISA resource manager and resource name. Other parameters are named not positional
@@ -40,14 +40,14 @@ end
 
 type Keithley2400Ib # source current, measure voltage
 	vi::PyObject 	# this is the GpibInstrument object!
-	range::Float
-	cmpl::Float
+	range::Float64
+	cmpl::Float64
 end
 
 type Keithley24004W # 4-wire ohms
 	vi::PyObject 	# this is the GpibInstrument object!
-	range::Float
-	cmpl::Float
+	range::Float64
+	cmpl::Float64
 end
 
 Keithley2400Vb <: Keithley2400
@@ -57,9 +57,9 @@ Keithley24004W <: Keithley2400
 type Keithley2400Vsrc
 	instr::Keithley2400Vb
 	label::Label
-	val::Float
-	step::Float
-	delay::Float
+	val::Float64
+	step::Float64
+	delay::Float64
 end
 
 Keithley2400Vsrc <: Output
@@ -72,7 +72,7 @@ end
 type Keithley2400Imeas
 	instr::Keithley2400Vb
 	label::Label
-	val::Float
+	val::Float64
 end
 
 Keithley2400Imeas <: BufferedInput

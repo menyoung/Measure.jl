@@ -5,7 +5,7 @@
 export TimeChannel
 
 type TimeChannel
-	t0::Float
+	t0::Float64
 end
 
 TimeChannel() = TimeChannel(time())

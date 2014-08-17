@@ -5,8 +5,8 @@ export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR8
 type SR830
 	vi::PyObject # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
-	res::Int # high reserve = 0 normal = 1 low noise = 2
-	tc::Float # time constant in s
+	res::Int32 # high reserve = 0 normal = 1 low noise = 2
+	tc::Float64 # time constant in s
 end
 
 # converting back and forth between codes and values for sensitivity/range/time constant/etc
@@ -66,13 +66,13 @@ abstract SR830Output <: Output
 type SR830Ampl
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 type SR830Freq
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 SR830Ampl <: SR830Output
@@ -93,25 +93,25 @@ abstract SR830Input <: Input
 type SR830X
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 type SR830Y
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 type SR830R
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 type SR830P
 	instr::SR830
 	label::Label
-	val::Float
+	val::Float64
 end
 
 SR830X <: SR830Input
