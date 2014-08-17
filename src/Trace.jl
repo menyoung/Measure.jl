@@ -1,5 +1,7 @@
 ### Trace: sweep and plot in real time. Save data into filesystem.
 
+export trace, traces
+
 using PyPlot
 
 pygui(true)

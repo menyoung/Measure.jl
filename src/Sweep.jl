@@ -1,5 +1,7 @@
 ### Basic sweep code
 
+export sweep, sweeps, sweep2d
+
 function sweep(ch0::Output, ch1::Input, x_itr, tstep)
 	map(x_itr) do x
 		source(ch0, x)

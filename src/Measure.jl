@@ -35,4 +35,17 @@ ask(ins::Instrument, msg::ASCIIString) = ins.vi[:ask](msg)
 read(ins::Instrument) = ins.vi[:read]()
 write(ins::Instrument, msg::ASCIIString) = ins.vi[:write](msg)
 
+# instrument drivers
+
+include("Random.jl")
+include("Time.jl")
+include("Agilent34401a.jl")
+include("Keithley2400.jl")
+include("SR830.jl")
+
+# utility functions
+
+include("Sweep.jl")
+include("Trace.jl")
+
 end # module

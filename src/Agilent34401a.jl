@@ -1,7 +1,6 @@
 ### Agilent 34401A concrete types and methods
 
-using PyCall
-@pyimport visa
+export Agilent34401a
 
 type Agilent34401a
 	vi::PyObject 	# this is the GpibInstrument object!

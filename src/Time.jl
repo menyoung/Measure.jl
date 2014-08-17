@@ -1,4 +1,8 @@
 ### time.jl a fake output instrument for inputs over time
+# sourcing 0 or negative time resets clock.
+# sourcing positive value returns 
+
+export TimeChannel
 
 type TimeChannel
 	t0::Float
