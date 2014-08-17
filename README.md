@@ -1,9 +1,6 @@
-# Measure
+# Measure.jl
 
 [![Build Status](https://travis-ci.org/menyoung/Measure.jl.svg?branch=master)](https://travis-ci.org/menyoung/Measure.jl)
-
-Measure
-=======
 
 electron goes in, electron goes out; you can't explain that!
 
