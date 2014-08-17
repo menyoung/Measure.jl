@@ -1,7 +1,6 @@
 ### SR830 concrete types and methods
 
-using PyCall
-@pyimport visa
+export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, measure
 
 type SR830
 	vi::PyObject # this is the GpibInstrument object!

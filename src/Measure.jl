@@ -1,5 +1,8 @@
 module Measure
 
+export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
+export ask, read, write
+
 using PyCall
 @pyimport visa
 

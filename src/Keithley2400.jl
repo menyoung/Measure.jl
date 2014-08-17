@@ -1,7 +1,7 @@
 ### Keithley 2400 concrete types and methods
 
-using PyCall
-@pyimport visa
+export Keithely2400, Keithley2400Vb, Keithley2400Ib, Keithley24004W, Keithley2400Vsrc, Keithley2400Imeas
+export source, measure, trigger, fetch
 
 abstract Keithley2400 <: GpibInstrument
 
