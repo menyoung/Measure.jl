@@ -1,6 +1,6 @@
 ### Agilent 34401A concrete types and methods
 
-export Agilent34401a
+export Agilent34401A
 
 type Agilent34401a
 	vi::PyObject 	# this is the GpibInstrument object!
