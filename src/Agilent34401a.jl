@@ -1,6 +1,6 @@
 ### Agilent 34401A concrete types and methods
 
-export Agilent34401A
+export Agilent34401a
 
 type Agilent34401a
 	vi::PyObject 	# this is the GpibInstrument object!
@@ -10,7 +10,7 @@ type Agilent34401a
 	tc::Int 		# integration time in PLCs
 end
 
-Agilent34401a <: GpibInstrument
+Agilent34401A <: GpibInstrument
 
 type Agilent34401aVDC
 	instr::Agilent34401a
