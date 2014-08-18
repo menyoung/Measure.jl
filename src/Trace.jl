@@ -17,6 +17,7 @@ function trace(ch0::Output, ch1::Input, x_itr, tstep)
 		# line.set_ydata(data)
 		plot(x = x_itr, y = data)
 	end
+	data
 end
 
 function traces(ch0::Output, ch2::Array{Input,1}, x_itr, tstep)
