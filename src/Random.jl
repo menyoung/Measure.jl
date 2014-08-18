@@ -5,6 +5,4 @@ export RandomInput
 type RandomInput <: Input
 end
 
-function measure(ch::RandomInput)
-	return rand()
-end
+measure(ch::RandomInput) = rand()

@@ -7,7 +7,7 @@ type Agilent34401a <: GpibInstrument
 	filter::Int 	# filter speed
 	range::Float64 	# 0 for autorange
 	imp::Bool 		# input impedance is 10M (0) or high (1)
-	tc::Int32 		# integration time in PLCs
+	tc::Int 		# integration time in PLCs
 end
 
 type Agilent34401aVDC <: BufferedInput

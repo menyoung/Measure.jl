@@ -5,7 +5,7 @@ export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR8
 type SR830 <: GpibInstrument
 	vi::PyObject # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
-	res::Int32 # high reserve = 0 normal = 1 low noise = 2
+	res::Int # high reserve = 0 normal = 1 low noise = 2
 	tc::Float64 # time constant in s
 end
 

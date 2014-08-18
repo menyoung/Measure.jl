@@ -2,15 +2,20 @@
 # sourcing 0 or negative time resets clock.
 # sourcing positive value returns 
 
-export TimeChannel
+export TimeOutput, TimeInput
 
-type TimeChannel <: Output
+type TimeOutput <: Output
 	t0::Float64
 end
 
-TimeChannel() = TimeChannel(time())
+type TimeInput <: Input
+	t0::Float64
+end
 
-function source(ch::TimeChannel, val::Real)
+TimeInput() = TimeInput(time())
+TimeOutput() = TimeOutput(time())
+
+function source(ch::TimeOutput, val::Real)
 	if val < eps()
 		ch.t0 = time()
 	else
@@ -19,3 +24,5 @@ function source(ch::TimeChannel, val::Real)
 		end
 	end
 end
+
+measure(ch::TimeInput) = time() - ch.t0
