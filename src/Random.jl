@@ -2,10 +2,8 @@
 
 export RandomInput
 
-type RandomInput
+type RandomInput <: Input
 end
-
-RandomInput <: Input
 
 function measure(ch::RandomInput)
 	return rand()

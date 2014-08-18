@@ -2,7 +2,7 @@
 
 export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, measure
 
-type SR830
+type SR830 <: GpibInstrument
 	vi::PyObject # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
 	res::Int32 # high reserve = 0 normal = 1 low noise = 2
@@ -60,24 +60,19 @@ function SR830(rm::PyObject, name::String; sens = -1, res = -1, tc = -1)
 	SR830(vi, sens, res, tc)
 end
 
-SR830 <: GpibInstrument
-
 abstract SR830Output <: Output
 
-type SR830Ampl
+type SR830Ampl <: SR830Output
 	instr::SR830
 	label::Label
 	val::Float64
 end
 
-type SR830Freq
+type SR830Freq <: SR830Output
 	instr::SR830
 	label::Label
 	val::Float64
 end
-
-SR830Ampl <: SR830Output
-SR830Freq <: SR830Output
 
 ### ref voltage Output
 function source(ch::SR830Ampl, val::Real)
@@ -91,34 +86,29 @@ end
 
 abstract SR830Input <: Input
 
-type SR830X
+type SR830X <: SR830Input
 	instr::SR830
 	label::Label
 	val::Float64
 end
 
-type SR830Y
+type SR830Y <: SR830Input
 	instr::SR830
 	label::Label
 	val::Float64
 end
 
-type SR830R
+type SR830R <: SR830Input
 	instr::SR830
 	label::Label
 	val::Float64
 end
 
-type SR830P
+type SR830P <: SR830Input
 	instr::SR830
 	label::Label
 	val::Float64
 end
-
-SR830X <: SR830Input
-SR830Y <: SR830Input
-SR830R <: SR830Input
-SR830P <: SR830Input
 
 function measure(ch::SR830X)
 	ch.val = ask(ch.instr, "OUTP ? 1")

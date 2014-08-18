@@ -2,7 +2,7 @@
 
 export Agilent34401a, Agilent34401aVDC, measure, trigget, fetch
 
-type Agilent34401a
+type Agilent34401a <: GpibInstrument
 	vi::PyObject 	# this is the GpibInstrument object!
 	filter::Int 	# filter speed
 	range::Float64 	# 0 for autorange
@@ -10,15 +10,11 @@ type Agilent34401a
 	tc::Int32 		# integration time in PLCs
 end
 
-Agilent34401a <: GpibInstrument
-
-type Agilent34401aVDC
+type Agilent34401aVDC <: BufferedInput
 	instr::Agilent34401a
 	label::Label
 	val::Float64
 end
-
-Agilent34401aVDC <: BufferedInput
 
 function measure(ch::Agilent34401aVDC) 
 	ch.val = ask(ch.instr, "MEAS:VOLT:DC?")

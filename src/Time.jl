@@ -4,19 +4,18 @@
 
 export TimeChannel
 
-type TimeChannel
+type TimeChannel <: Output
 	t0::Float64
 end
 
 TimeChannel() = TimeChannel(time())
 
-TimeChannel <: Output
-
 function source(ch::TimeChannel, val::Real)
 	if val < eps()
 		ch.t0 = time()
 	else
-		while val + time() > ch.t0
+		while val + ch.t0 > time()
+			sleep(0.01)
 		end
 	end
 end

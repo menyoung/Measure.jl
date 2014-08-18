@@ -5,7 +5,7 @@ export source, measure, trigger, fetch
 
 abstract Keithley2400 <: GpibInstrument
 
-type Keithley2400Vb # source voltage, measure current
+type Keithley2400Vb <: Keithley2400 # source voltage, measure current
 	vi::PyObject 	# this is the GpibInstrument object!
 	range::Float64 	# output range
 	cmpl::Float64 	# compliance current
@@ -38,23 +38,19 @@ function Keithley24000Vb(rm::PyObject, name::String; range = -1, cmpl = -1)
 	end
 end
 
-type Keithley2400Ib # source current, measure voltage
+type Keithley2400Ib <: Keithley2400 # source current, measure voltage
 	vi::PyObject 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
-type Keithley24004W # 4-wire ohms
+type Keithley24004W <: Keithley2400 # 4-wire ohms
 	vi::PyObject 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
-Keithley2400Vb <: Keithley2400
-Keithley2400Ib <: Keithley2400
-Keithley24004W <: Keithley2400
-
-type Keithley2400Vsrc
+type Keithley2400Vsrc <: Output
 	instr::Keithley2400Vb
 	label::Label
 	val::Float64
@@ -62,20 +58,16 @@ type Keithley2400Vsrc
 	delay::Float64
 end
 
-Keithley2400Vsrc <: Output
-
 function source(ch::Keithley2400Vsrc, val::Real)
 	ch.val = val
 	write(ch.instr, "SOUR:VOLT $val")
 end
 
-type Keithley2400Imeas
+type Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
 	label::Label
 	val::Float64
 end
-
-Keithley2400Imeas <: BufferedInput
 
 function measure(ch::Keithley2400Imeas)
 	ch.val = ask(ch.instr, "READ?")

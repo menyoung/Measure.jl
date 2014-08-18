@@ -2,7 +2,7 @@
 
 export trace, traces
 
-# using PyPlot
+using PyPlot
 
 pygui(true)
 
@@ -11,7 +11,7 @@ pygui(true)
 function trace(ch0::Output, ch1::Input, x_itr, tstep)
 	data = Array(Float64, length(x_itr))
 	figure()
-	line, = plot(x_itr,[]])
+	line, = plot(x_itr,[])
 	for (i,x) in enumerate(x_itr)
 		source(ch0, x)
 		sleep(tstep)
