@@ -56,6 +56,7 @@ function SR830(rm::PyObject, name::String; sens = -1, res = -1, tc = -1)
 		end
 		tc_code = get_code(SR830_tc_conv, sens)
 		vi[:write]("OFLT $tc_code")
+	end
 	SR830(vi, sens, res, tc)
 end
 
