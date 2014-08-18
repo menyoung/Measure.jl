@@ -2,7 +2,7 @@
 
 export trace, traces
 
-using PyPlot
+# using PyPlot
 
 pygui(true)
 
