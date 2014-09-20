@@ -17,6 +17,7 @@ end
 
 function trace(ch0::Output, ch1::Input, x_itr, tstep)
 # consumer function runs the display server
+	done = false
 	data = Array(Float64, length(x_itr))
 	wsh = WebSockets.WebSocketHandler() do req,client
 			msg = WebSockets.read(client)
@@ -25,14 +26,15 @@ function trace(ch0::Output, ch1::Input, x_itr, tstep)
 				data[i] = y
 				WebSockets.write(client, json((x,y)))
 	        end
+	        done = true
 	    end
 
 	server = HttpServer.Server(wsh)
-	try
-		HttpServer.run(server,8080)
-	catch
-		data
+	t = Task(() -> HttpServer.run(server,8080))
+	while true
+		println(done)
 	end
+	data
 end
 
 function traces(ch0::Output, ch2::Array{Input,1}, x_itr, tstep)
