@@ -1,4 +1,8 @@
-### Trace: sweep and plot in real time. Save data into filesystem.
+### Trace: sweep and plot in real time.
+# 1. feed data to a "plotting server" by raw TCP socket
+# 2. save data periodically into the filesystem
+# the plotting server caches all the data that should be live-plotted
+# the D3.js rendering page receives the data from the plotting server by WebSockets
 
 export produce_data, trace, traces
 
@@ -6,7 +10,7 @@ import HttpServer
 import WebSockets
 using JSON
 
-# a producer function
+# a producer function takes data
 function produce_datum(ch0::Output, ch1::Input, x_itr, tstep)
 	for (i,x) in enumerate(x_itr)
 		source(ch0, x)
@@ -15,9 +19,24 @@ function produce_datum(ch0::Output, ch1::Input, x_itr, tstep)
 	end
 end
 
-function trace(ch0::Output, ch1::Input, x_itr, tstep)
+function trace(ch0::Output, ch1::Input, x_itr, tstep, port)
+	map(x_itr) do x
+		source(ch0, x)
+		sleep(tstep)
+		measure(ch1)
+		feed_data()
+	end
+end
+
+function serve_data()
 # consumer function runs the display server
 	data = Array(Float64, length(x_itr))
+	for (i,x) in enumerate(x_itr)
+		source(ch0, x)
+		sleep(tstep)
+		data[i] = measure(ch1)
+	end
+	data
 	wsh = WebSockets.WebSocketHandler() do req,client
 			msg = WebSockets.read(client)
 			println(msg)
