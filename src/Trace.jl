@@ -1,9 +1,9 @@
 ### Trace: sweep and plot in real time.
 # 1. feed data to a "plotting server" by raw TCP socket
+# this is achieved by printing a JSON.
 # 2. save data periodically into the filesystem
-# the plotting server caches all the data that should be live-plotted
-# the server: written in what language/framework? Could be Julia, Python, or Node.
-# the D3.js rendering page receives the data from the plotting server by WebSockets
+
+import JSON
 
 export trace, traces
 
@@ -17,14 +17,19 @@ export trace, traces
 # end
 
 function trace(ch0::Output, ch1::Input, x_itr, tstep, port)
-	# start the plot server, take data and feed to server
-	`julia PlotServer.jl`
+	# start plot server, take data and print to plotter
+	# `julia PlotServer.jl`
+	plot = connect(port)
 	map(x_itr) do x
 		source(ch0, x)
 		sleep(tstep)
-		measure(ch1)
-		feed_data()
+		y = measure(ch1)
+		JSON.print(plot, (x,y))
+		println(plot, "")
+		# printf(plot, "%f %f\n", x, y)
+		y
 	end
+	close(plot)
 end
 
 function traces(ch0::Output, ch2::Array{Input,1}, x_itr, tstep)
