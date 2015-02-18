@@ -52,7 +52,7 @@ end
 
 type Keithley2400Vsrc <: Output
 	instr::Keithley2400Vb
-	label::Label
+	label::(String,String)
 	val::Float64
 	step::Float64
 	delay::Float64
@@ -65,7 +65,7 @@ end
 
 type Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 

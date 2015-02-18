@@ -64,13 +64,13 @@ abstract SR830Output <: Output
 
 type SR830Ampl <: SR830Output
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
 type SR830Freq <: SR830Output
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
@@ -88,37 +88,37 @@ abstract SR830Input <: Input
 
 type SR830X <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
 type SR830Y <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
 type SR830R <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
 type SR830P <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 
 type SR830RP <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::(Float64,Float64)
 end
 
 type SR830XY <: SR830Input
 	instr::SR830
-	label::Label
+	label::(String,String)
 	val::(Float64,Float64)
 end
 

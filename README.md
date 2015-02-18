@@ -37,17 +37,20 @@ plus what idea those types encode, i.e, attributes and methods
 #### Instruments
 * Instrument
 	* standard VISA operations, wrap PyVISA VISA class, basically
+	* other attributes that are physically tied throughout the instrument, i.e. lock-in constant
 * GpibInstrument extends Instrument
 	* in addition, GPIB specific stuff like board number and address!
 	* basically wrap PyVISA's GpibInstrument class
 
 #### Channels
 * Channel
-	* current value, label and unit?
+	* required internal attribute: label::Label
+	* Label is tuple type of 'name' and 'unit'.
 	* make parametric with data type of the value? Good for handling tuples...
+	* expose "lazy" evaluation: val() function
 	* channels can satisfy some of these traits below:
 * Output
-	* source, on/off
+	* source, (optional) on/off
 	* iterable! Just output those things one at a time!
 * Input can be immutable?
 	* measure
@@ -69,7 +72,7 @@ plus what idea those types encode, i.e, attributes and methods
 * PID extends Channel
 	* setpt, on/off.
 	* P, I, and D.
-* Calculated implements Input
+* MathInput implements Input
 	* pointers, closures to Channels
 	* user provides anonymous function that calculates.
 	* use case: resistance bridge to measure temperature, Rcb and Gvb.
@@ -87,7 +90,7 @@ Use closures to link together channels that have to share same attributes (?)
 	* SR830 channels:
 		* V implements Output
 		* X, Y, R, P, XY, and RP implement Input
-		* Rcb Gvb, etc implement Calculated
+		* Rcb Gvb, etc implement MathInput
 	* attributes: time constant, etc.
 * Keithley2400 implements GpibInstrument
 	* Keithley2400Channels: volt, curr, volt4w

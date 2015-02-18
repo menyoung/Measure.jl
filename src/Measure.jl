@@ -8,7 +8,7 @@ using PyCall
 
 ### Channel abstract type and subtypes
 # required attributes:
-# 	current value, label and unit?
+# 	current value "val" and label "lab" ?
 # required functions:
 
 abstract Channel
@@ -17,9 +17,7 @@ abstract Input <: Channel
 abstract Output <: Channel
 abstract BufferedInput <: Input
 abstract BufferedOutput <: Output
-abstract VirtualOutput <: Output
 abstract PID <: Channel
-abstract Calculated <: Input
 
 type Label
 	name::String
@@ -45,6 +43,7 @@ include("Time.jl")
 include("Agilent34401a.jl")
 include("Keithley2400.jl")
 include("SR830.jl")
+include("Virtual.jl")
 
 # utility functions
 
