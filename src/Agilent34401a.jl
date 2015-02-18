@@ -8,11 +8,12 @@ type Agilent34401a <: GpibInstrument
 	range::Float64 	# 0 for autorange
 	imp::Bool 		# input impedance is 10M (0) or high (1)
 	tc::Int 		# integration time in PLCs
+	name::String
 end
 
 type Agilent34401aVDC <: BufferedInput
 	instr::Agilent34401a
-	label::Label
+	label::(String,String)
 	val::Float64
 end
 

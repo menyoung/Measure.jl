@@ -7,6 +7,7 @@ type SR830 <: GpibInstrument
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
 	tc::Float64 # time constant in s
+	name::String
 end
 
 # converting back and forth between codes and values for sensitivity/range/time constant/etc
@@ -22,16 +23,16 @@ function get_code(conv, target)
 	code
 end
 
-# constructor takes VISA resource manager and resource name. Other parameters are named not positional
-function SR830(rm::PyObject, name::String; sens = -1, res = -1, tc = -1)
-	vi = rm.get_instrument(name)
+# constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
+function SR830(rm::PyObject, rsrc::String; sens = -1, res = -1, tc = -1, name::String = "")
+	vi = rm.get_instrument(rsrc)
 	# default parameters: -1 means read the current state and legislate here.
 	if sens < 0
 		sens_code = vi[:ask]("SENS?")
 		sens = SR830_sens_conv(sens_code)
 	else
 		if sens > 1
-			warn("SR830 $name range cannot be above 1V. Was given $sens V. Setting it to 1V.")
+			warn("SR830 $rsrc range cannot be above 1V. Was given $sens V. Setting it to 1V.")
 			sens = 1
 		end
 		sens_code = get_code(SR830_sens_conv, sens)
@@ -41,7 +42,7 @@ function SR830(rm::PyObject, name::String; sens = -1, res = -1, tc = -1)
 		res = vi[:ask]("RMOD?")
 	else
 		if !(res in 0:2)
-			warn("SR830 $name reserve must be 0 1 or 2. Was given $res. Setting to normal (1).")
+			warn("SR830 $rsrc reserve must be 0 1 or 2. Was given $res. Setting to normal (1).")
 			res = 1
 		end
 		vi[:write]("RMOD $res")
@@ -51,13 +52,13 @@ function SR830(rm::PyObject, name::String; sens = -1, res = -1, tc = -1)
 		tc = SR830_tc_conv(tc_code)
 	else
 		if tc > 30000
-			warn("SR830 $name time constant cannot be above 30ks. Was given $tc s. Setting it to max 30ks.")
+			warn("SR830 $rsrc time constant cannot be above 30ks. Was given $tc s. Setting it to max 30ks.")
 			tc = 30000
 		end
 		tc_code = get_code(SR830_tc_conv, sens)
 		vi[:write]("OFLT $tc_code")
 	end
-	SR830(vi, sens, res, tc)
+	SR830(vi, sens, res, tc, name == "" ? rsrc : name)
 end
 
 abstract SR830Output <: Output

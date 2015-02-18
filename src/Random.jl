@@ -6,7 +6,9 @@ type RandomInput <: Input
 	label::(String,String)
 end
 
+RandomInput() = RandomInput("Random Channel")
+
+val(ch::RandomInput) = rand()
 measure(ch::RandomInput) = rand()
-function trigger(ch::RandomInput)
-end
+trigger(ch::RandomInput) = nothing
 fetch(ch::RandomInput) = rand()

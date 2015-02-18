@@ -7,15 +7,12 @@ export source, measure
 
 type Timer <: Instrument
 	t0::Float64
+	name::String
 end
 
-Timer() = Timer(time())
+Timer() = Timer(time(), "Timer")
 
 type TimeOutput <: Output
-	instr::Timer
-end
-
-type TimeInput <: Input
 	instr::Timer
 end
 
@@ -28,5 +25,13 @@ function source(ch::TimeOutput, val::Real)
 		end
 	end
 end
+val(ch::TimeOutput) = time() - ch.instr.t0
+label(ch::TimeOutput) = "Output Timer"
+
+type TimeInput <: Input
+	instr::Timer
+end
 
 measure(ch::TimeInput) = time() - ch.instr.t0
+val(ch::TimeInput) = time() - ch.instr.t0
+label(ch::TimeOutput) = "Timer Reading"

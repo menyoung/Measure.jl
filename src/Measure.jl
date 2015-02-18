@@ -13,6 +13,9 @@ using PyCall
 
 abstract Channel
 
+val(ch::Channel) = ch.val
+label(ch::Channel) = ch.label
+
 abstract Input <: Channel
 abstract Output <: Channel
 abstract BufferedInput <: Input
@@ -32,14 +35,16 @@ end
 abstract Instrument
 abstract GpibInstrument <: Instrument
 
-ask(ins::Instrument, msg::ASCIIString) = ins.vi[:ask](msg)
-read(ins::Instrument) = ins.vi[:read]()
-write(ins::Instrument, msg::ASCIIString) = ins.vi[:write](msg)
+name(instr::Instrument) = instr.name
+
+read(instr::GpibInstrument) = instr.vi[:read]()
+ask(instr::GpibInstrument, msg::ASCIIString) = instr.vi[:ask](msg)
+write(instr::GpibInstrument, msg::ASCIIString) = instr.vi[:write](msg)
 
 # instrument drivers
 
-include("Random.jl")
 include("Time.jl")
+include("Random.jl")
 include("Agilent34401a.jl")
 include("Keithley2400.jl")
 include("SR830.jl")

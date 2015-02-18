@@ -9,11 +9,12 @@ type Keithley2400Vb <: Keithley2400 # source voltage, measure current
 	vi::PyObject 	# this is the GpibInstrument object!
 	range::Float64 	# output range
 	cmpl::Float64 	# compliance current
+	name::String
 end
 
-# constructor takes VISA resource manager and resource name. Other parameters are named not positional
-function Keithley24000Vb(rm::PyObject, name::String; range = -1, cmpl = -1)
-	vi = rm.get_instrument(name)
+# constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
+function Keithley2400Vb(rm::PyObject, rsrc::String; range = -1, cmpl = -1, name::String = ""))
+	vi = rm.get_instrument(rsrc)
 	vi[:write]("SOUR:FUNC VOLT")
 	vi[:write]("SENS:FUNC CURR")
 	vi[:write]("SENS:CURR:RANGE AUTO")
@@ -21,7 +22,7 @@ function Keithley24000Vb(rm::PyObject, name::String; range = -1, cmpl = -1)
 		range = vi[:ask]("SOUR:VOLT:RANGE?")
 	else
 		if range > 210
-			warn("Keithley 2400 $name range cannot be above 210V. Was given $range V. Setting it to max 210V.")
+			warn("Keithley 2400 $rsrc range cannot be above 210V. Was given $range V. Setting it to max 210V.")
 			range = 210
 		end
 		vi[:write]("SOUR:VOLT $range")
@@ -31,11 +32,12 @@ function Keithley24000Vb(rm::PyObject, name::String; range = -1, cmpl = -1)
 	else
 		max_cmpl = range > 20 ? 0.105 : 1.05
 		if cmpl > max_cmpl
-			warn("Keithley 2400 $name compliance cannot be above 105uA. Was given $cmpl A. Setting it to maximum for this range.")
+			warn("Keithley 2400 $rsrc compliance cannot be above 105uA. Was given $cmpl A. Setting it to maximum for this range.")
 			cmpl = max_cmpl
 		end
 		vi[:write]("SENS:CURR:PROT $cmpl")
 	end
+	Keithley2400Vb(vi, range, cmpl, name == "" ? rsrc : name)
 end
 
 type Keithley2400Ib <: Keithley2400 # source current, measure voltage
@@ -58,15 +60,43 @@ type Keithley2400Vsrc <: Output
 	delay::Float64
 end
 
+function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = NaN, delay::Real = NaN, label::(String,String) = ("Unnamed Keithley","V"))
+	Keithley2400Vsrc(
+		instr,
+		label,
+		isnan(val) ? ask(instr, "SOUR:VOLT?") : val
+		isnan(step) ? 0.001 : step
+		isnan(delay) ? 0 : delay)
+end
+
 function source(ch::Keithley2400Vsrc, val::Real)
+	timer = Timer()
+	timeOut = TimeOutput(timer)
+	timeIn = TimeInput(timer)
+	time = 0.0
+	while (abs(val - ch.val) > ch.step)
+		time += ch.delay
+		source(timeOut, time)
+		ch.val += (val > ch.val) ? ch.step : -ch.step
+		write(ch.instr, "SOUR:VOLT $ch.val")
+	end
+	time += ch.delay
+	source(timeOut, time)
 	ch.val = val
-	write(ch.instr, "SOUR:VOLT $val")
+	write(ch.instr, "SOUR:VOLT $ch.val")
 end
 
 type Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
 	label::(String,String)
 	val::Float64
+end
+
+function Keithley2400Imeas(instr::Keithley2400Vb, label::(String,String) = ("Unnamed Keithley","A"))
+	Keithley2400Imeas(
+		instr,
+		label,
+		ask(instr, "READ?"))
 end
 
 function measure(ch::Keithley2400Imeas)
