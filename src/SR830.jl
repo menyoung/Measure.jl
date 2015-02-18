@@ -75,14 +75,42 @@ type SR830Freq <: SR830Output
 	val::Float64
 end
 
-### ref voltage Output
-function source(ch::SR830Ampl, val::Real)
-	ch.val = val
-	write(ch.instr, "SLVL $val")
+function SR830Freq(instr::SR830, val::Real = NaN, label::(String,String) = ("Lockin Frequency","V"))
+	if isnan(val)
+		val = ask(instr, "SLVL?")
+	else
+		write(ch.instr, "SLVL $val")
+	end
+	SR830Ampl(instr,label,val)
 end
+
+function SR830Ampl(instr::SR830, val::Real = NaN, label::(String,String) = ("Lockin Reference Amplitude","V"))
+	if isnan(val)
+		val = ask(instr, "SLVL?")
+	else
+		write(ch.instr, "SLVL $val")
+	end
+	SR830Ampl(instr,label,val)
+end
+
+### ref voltage Output
+# if 0 or negative then just read
+function source(ch::SR830Ampl, val::Real)
+	if val < eps()
+		ch.val = ask(ch.instr, "FREQ?")
+	else
+		ch.val = val
+		write(ch.instr, "FREQ $val")
+	end
+end
+
 function source(ch::SR830Freq, val::Real)
-	ch.val = val
-	write(ch.instr, "FREQ $val")
+	if val < eps()
+		ch.val = ask(ch.instr, "FREQ?")
+	else
+		ch.val = val
+		write(ch.instr, "FREQ $val")
+	end
 end
 
 abstract SR830Input <: Input
