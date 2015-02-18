@@ -1,6 +1,6 @@
 ### SR830 concrete types and methods
 
-export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, measure
+export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, measure
 
 type SR830 <: GpibInstrument
 	vi::PyObject # this is the GpibInstrument object!
@@ -110,15 +110,34 @@ type SR830P <: SR830Input
 	val::Float64
 end
 
+type SR830RP <: SR830Input
+	instr::SR830
+	label::Label
+	val::(Float64,Float64)
+end
+
+type SR830XY <: SR830Input
+	instr::SR830
+	label::Label
+	val::(Float64,Float64)
+end
+
+function measure(ch::SR830XY)
+	ch.val = ask(ch.instr, "SNAP? 1,2")
+end
+function measure(ch::SR830RP)
+	ch.val = ask(ch.instr, "SNAP? 3,4")
+end
+
 function measure(ch::SR830X)
-	ch.val = ask(ch.instr, "OUTP ? 1")
+	ch.val = ask(ch.instr, "OUTP? 1")
 end
 function measure(ch::SR830Y)
-	ch.val = ask(ch.instr, "OUTP ? 2")
+	ch.val = ask(ch.instr, "OUTP? 2")
 end
 function measure(ch::SR830R)
-	ch.val = ask(ch.instr, "OUTP ? 3")
+	ch.val = ask(ch.instr, "OUTP? 3")
 end
 function measure(ch::SR830P)
-	ch.val = ask(ch.instr, "OUTP ? 4")
+	ch.val = ask(ch.instr, "OUTP? 4")
 end

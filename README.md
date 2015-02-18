@@ -12,8 +12,8 @@ TODO
 ----
 
 Factor out python ?
-Make channels parametric: numbers, strings, tuples, etc.
-release to public eye.
+Igor interfaces
+Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 Philosophy
 ----------
@@ -57,33 +57,37 @@ plus what idea those types encode, i.e, attributes and methods
 * BufferedOutput extends Output
 	* load
 	* fire
-* VirtualOutput extends Output
+* VirtualOutput implements BufferedOutput
 	* hooks to DependentOutput channels
-* DependentOutput extends Output
+	* 'load' to change value
+	* 'fire' actually calls source on dependents
+* DependentOutput implements Output
+	* hook to Output channel: source the value!
 	* pointers to VirtualOutput channels
-	* user provides anonymous function that calcluates the output from other outputs
-	* (check for circular dependencies?! for now explicit depth levels)
+	* user provides anonymous function that calcluates the output from closures (e.g. VirtualOutputs)
+	* no nesting.
 * PID extends Channel
 	* setpt, on/off.
 	* P, I, and D.
-* Calculated extends Input
-	* pointers to Channels
+* Calculated implements Input
+	* pointers, closures to Channels
 	* user provides anonymous function that calculates.
 	* use case: resistance bridge to measure temperature, Rcb and Gvb.
+	* also, to save GPIB calls by using "SNAP" inputs then referring to those inputs
 
 #### Arrays of things
 * Array of Channels
 	* way to implement special cases where one command controls multiple channels, e.g. SR830
 
 Instruments host channels, channels may belong to instruments.
-Use closures to link together channels that have to share same attributes.
+Use closures to link together channels that have to share same attributes (?)
 
 ### concrete types. Every field except value should be immutable?  
 * SR830 implements GpibInstrument
 	* SR830 channels:
 		* V implements Output
-		* X Y R Th implement Input
-		* Rcb Gvb implement Calculated
+		* X, Y, R, P, XY, and RP implement Input
+		* Rcb Gvb, etc implement Calculated
 	* attributes: time constant, etc.
 * Keithley2400 implements GpibInstrument
 	* Keithley2400Channels: volt, curr, volt4w

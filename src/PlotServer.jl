@@ -28,7 +28,7 @@ listener = listen(tcport)
 @async begin
 	sock = accept(listener)
 	for datum in eachline(sock)
-		print(datum)
+		# print(datum)
 		push!(data, datum)
 	end
 end
