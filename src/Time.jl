@@ -1,6 +1,6 @@
 ### time.jl a fake output instrument for inputs over time
 # sourcing 0 or negative time resets clock.
-# sourcing positive value returns after waiting that much time.
+# sourcing positive value returns when that many seconds passed since reset
 
 export Timer, TimeOutput, TimeInput
 export source, measure
