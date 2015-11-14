@@ -11,9 +11,8 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 TODO
 ----
 
-Factor out python ?
+Use Raytheon VISA package
 Make channels parametric: numbers, strings, tuples, etc.
-release to public eye.
 
 Philosophy
 ----------
