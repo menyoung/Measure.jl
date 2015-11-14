@@ -1,0 +1,3 @@
+[submodule "Instruments.jl"]
+	path = Instruments.jl
+	url = https://github.com/menyoung/Instruments.jl.git
