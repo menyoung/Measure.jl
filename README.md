@@ -11,8 +11,8 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 TODO
 ----
 
-Factor out python ?
-Igor interfaces
+Use Raytheon VISA package
+Igor interfaces? how?
 Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 Philosophy
