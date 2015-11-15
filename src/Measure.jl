@@ -1,3 +1,8 @@
+### Measure.jl package
+# need to include the VISA submodule
+
+# include("Time.jl")
+
 module Measure
 
 export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
@@ -29,6 +34,7 @@ end
 
 ### Instrument abstract type
 # required attributes:
+#		name: a string. the name.
 # 	vi: a PyVISA.Instrument object
 # required functions:
 
