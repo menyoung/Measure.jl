@@ -1,15 +1,14 @@
 ### Measure.jl package
 # need to include the VISA submodule
 
-using Instruments
-
 module Measure
 
 export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
 # export ask, read, write
 
-using PyCall
-@pyimport visa
+using VISA
+#using PyCall
+#@pyimport visa
 
 ### Channel abstract type and subtypes
 # required attributes:
@@ -35,7 +34,7 @@ end
 ### Instrument abstract type
 # required attributes:
 #		name: a string. the name.
-# 	vi: a PyVISA.Instrument object
+# 	vi: instrument handle of type ViSession
 # required functions:
 
 abstract Instrument
@@ -43,9 +42,13 @@ abstract GpibInstrument <: Instrument
 
 name(instr::Instrument) = instr.name
 
-read(instr::GpibInstrument) = instr.vi[:read]()
-ask(instr::GpibInstrument, msg::ASCIIString) = instr.vi[:ask](msg)
-write(instr::GpibInstrument, msg::ASCIIString) = instr.vi[:write](msg)
+read(instr::Instrument) = viRead(instr.vi)
+write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi)
+
+ask(instr::Instrument, msg::ASCIIString)
+	write(instr,msg)
+	read(instr)
+end
 
 # instrument drivers
 
