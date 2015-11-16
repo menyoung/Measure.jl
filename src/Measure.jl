@@ -1,7 +1,7 @@
 ### Measure.jl package
 # need to include the VISA submodule
 
-# include("Time.jl")
+using Instruments
 
 module Measure
 
