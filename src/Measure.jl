@@ -43,7 +43,7 @@ abstract GpibInstrument <: Instrument
 
 name(instr::Instrument) = instr.name
 
-read(instr::Instrument) = viRead(instr.vi)
+read(instr::Instrument) = parse(bytestring(viRead(instr.vi)))
 write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi,msg)
 
 function ask(instr::Instrument, msg::ASCIIString)

@@ -18,7 +18,9 @@ function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name
 	viClear(vi)
 	viWrite(vi,"SOUR:FUNC VOLT")
 	viWrite(vi,"SENS:FUNC \"CURR\"")
+	viWrite(vi,"FORM:ELEM CURR")
 	viWrite(vi,"SENS:CURR:RANGE:AUTO 1")
+	viWrite(vi,"OUTP ON")
 	if range < 0
 		viWrite(vi,"SOUR:VOLT:RANGE?")
 		range = parse(bytestring(viRead(vi)))
@@ -67,7 +69,7 @@ function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = N
 	Keithley2400Vsrc(
 		instr,
 		label,
-		isnan(val) ? parse(bytestring(ask(instr, "SOUR:VOLT?"))) : val,
+		isnan(val) ? ask(instr, "SOUR:VOLT?") : val,
 		isnan(step) ? 0.001 : step,
 		isnan(delay) ? 0 : delay)
 end
