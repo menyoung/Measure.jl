@@ -75,7 +75,7 @@ function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = N
 end
 
 function source(ch::Keithley2400Vsrc, val::Real)
-	timer = Timer()
+	timer = Timing()
 	timeOut = TimeOutput(timer)
 	timeIn = TimeInput(timer)
 	time = 0.0

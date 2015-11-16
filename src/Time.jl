@@ -2,18 +2,18 @@
 # sourcing 0 or negative time resets clock.
 # sourcing positive value returns when that many seconds passed since reset
 
-export Timer, TimeOutput, TimeInput
+export Timing, TimeOutput, TimeInput
 export source, measure
 
-type Timer <: Instrument
+type Timing <: Instrument
 	t0::Float64
 	name::String
 end
 
-Timer() = Timer(time(), "Timer")
+Timing() = Timing(time(), "Timing")
 
 type TimeOutput <: Output
-	instr::Timer
+	instr::Timing
 end
 
 function source(ch::TimeOutput, val::Real)
@@ -26,12 +26,12 @@ function source(ch::TimeOutput, val::Real)
 	end
 end
 val(ch::TimeOutput) = time() - ch.instr.t0
-label(ch::TimeOutput) = "Output Timer"
+label(ch::TimeOutput) = "Output Timing"
 
 type TimeInput <: Input
-	instr::Timer
+	instr::Timing
 end
 
 measure(ch::TimeInput) = time() - ch.instr.t0
 val(ch::TimeInput) = time() - ch.instr.t0
-label(ch::TimeOutput) = "Timer Reading"
+label(ch::TimeOutput) = "Timing Reading"
