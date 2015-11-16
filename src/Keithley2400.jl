@@ -15,12 +15,13 @@ end
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
 function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name::String = "")
 	vi = viOpen(rm, rsrc)
+	viClear(vi)
 	viWrite(vi,"SOUR:FUNC VOLT")
-	viWrite(vi,"SENS:FUNC CURR")
-	viWrite(vi,"SENS:CURR:RANGE AUTO")
+	viWrite(vi,"SENS:FUNC \"CURR\"")
+	viWrite(vi,"SENS:CURR:RANGE:AUTO 1")
 	if range < 0
 		viWrite(vi,"SOUR:VOLT:RANGE?")
-		range = viRead(vi)
+		range = parse(bytestring(viRead(vi)))
 	else
 		if range > 210
 			warn("Keithley 2400 $rsrc range cannot be above 210V. Was given $range V. Setting it to max 210V.")
@@ -30,7 +31,7 @@ function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name
 	end
 	if cmpl < 0
 		viWrite(vi,"SENS:CURR:PROT?")
-		cmpl = viRead(vi)
+		cmpl = parse(bytestring(viRead(vi)))
 	else
 		max_cmpl = range > 20 ? 0.105 : 1.05
 		if cmpl > max_cmpl
@@ -66,7 +67,7 @@ function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = N
 	Keithley2400Vsrc(
 		instr,
 		label,
-		isnan(val) ? ask(instr, "SOUR:VOLT?") : val,
+		isnan(val) ? parse(bytestring(ask(instr, "SOUR:VOLT?"))) : val,
 		isnan(step) ? 0.001 : step,
 		isnan(delay) ? 0 : delay)
 end
@@ -80,12 +81,12 @@ function source(ch::Keithley2400Vsrc, val::Real)
 		time += ch.delay
 		source(timeOut, time)
 		ch.val += (val > ch.val) ? ch.step : -ch.step
-		write(ch.instr, "SOUR:VOLT $ch.val")
+		write(ch.instr, "SOUR:VOLT $(ch.val)")
 	end
 	time += ch.delay
 	source(timeOut, time)
 	ch.val = val
-	write(ch.instr, "SOUR:VOLT $ch.val")
+	write(ch.instr, "SOUR:VOLT $(ch.val)")
 end
 
 type Keithley2400Imeas <: BufferedInput

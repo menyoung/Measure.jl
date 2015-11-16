@@ -3,6 +3,7 @@
 
 module Measure
 
+export viOpenDefaultRM
 export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
 # export ask, read, write
 
@@ -43,7 +44,7 @@ abstract GpibInstrument <: Instrument
 name(instr::Instrument) = instr.name
 
 read(instr::Instrument) = viRead(instr.vi)
-write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi)
+write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi,msg)
 
 function ask(instr::Instrument, msg::ASCIIString)
 	write(instr,msg)
