@@ -12,7 +12,7 @@ using VISA
 
 ### Channel abstract type and subtypes
 # required attributes:
-# 	current value "val" and label "lab" ?
+# 	current value "val" and label "label"
 # required functions:
 
 abstract Channel
@@ -45,7 +45,7 @@ name(instr::Instrument) = instr.name
 read(instr::Instrument) = viRead(instr.vi)
 write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi)
 
-ask(instr::Instrument, msg::ASCIIString)
+function ask(instr::Instrument, msg::ASCIIString)
 	write(instr,msg)
 	read(instr)
 end
@@ -63,5 +63,7 @@ include("Virtual.jl")
 
 include("Sweep.jl")
 include("Trace.jl")
+
+include("Master.jl")
 
 end # module

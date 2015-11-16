@@ -6,66 +6,68 @@ export source, measure, trigger, fetch
 abstract Keithley2400 <: GpibInstrument
 
 type Keithley2400Vb <: Keithley2400 # source voltage, measure current
-	vi::PyObject 	# this is the GpibInstrument object!
+	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64 	# output range
 	cmpl::Float64 	# compliance current
 	name::String
 end
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function Keithley2400Vb(rm::PyObject, rsrc::String; range = -1, cmpl = -1, name::String = ""))
-	vi = rm.get_instrument(rsrc)
-	vi[:write]("SOUR:FUNC VOLT")
-	vi[:write]("SENS:FUNC CURR")
-	vi[:write]("SENS:CURR:RANGE AUTO")
+function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name::String = "")
+	vi = viOpen(rm, rsrc)
+	viWrite(vi,"SOUR:FUNC VOLT")
+	viWrite(vi,"SENS:FUNC CURR")
+	viWrite(vi,"SENS:CURR:RANGE AUTO")
 	if range < 0
-		range = vi[:ask]("SOUR:VOLT:RANGE?")
+		viWrite(vi,"SOUR:VOLT:RANGE?")
+		range = viRead(vi)
 	else
 		if range > 210
 			warn("Keithley 2400 $rsrc range cannot be above 210V. Was given $range V. Setting it to max 210V.")
 			range = 210
 		end
-		vi[:write]("SOUR:VOLT $range")
+		viWrite(vi,"SOUR:VOLT $range")
 	end
 	if cmpl < 0
-		cmpl = vi[:ask]("SENS:CURR:PROT?")
+		viWrite(vi,"SENS:CURR:PROT?")
+		cmpl = viRead(vi)
 	else
 		max_cmpl = range > 20 ? 0.105 : 1.05
 		if cmpl > max_cmpl
 			warn("Keithley 2400 $rsrc compliance cannot be above 105uA. Was given $cmpl A. Setting it to maximum for this range.")
 			cmpl = max_cmpl
 		end
-		vi[:write]("SENS:CURR:PROT $cmpl")
+		viWrite(vi,"SENS:CURR:PROT $cmpl")
 	end
 	Keithley2400Vb(vi, range, cmpl, name == "" ? rsrc : name)
 end
 
 type Keithley2400Ib <: Keithley2400 # source current, measure voltage
-	vi::PyObject 	# this is the GpibInstrument object!
+	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
 type Keithley24004W <: Keithley2400 # 4-wire ohms
-	vi::PyObject 	# this is the GpibInstrument object!
+	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
 type Keithley2400Vsrc <: Output
 	instr::Keithley2400Vb
-	label::(String,String)
+	label::Label
 	val::Float64
 	step::Float64
 	delay::Float64
 end
 
-function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = NaN, delay::Real = NaN, label::(String,String) = ("Unnamed Keithley","V"))
+function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = NaN, delay::Real = NaN, label::Label = Label("Unnamed Keithley","V"))
 	Keithley2400Vsrc(
 		instr,
 		label,
-		isnan(val) ? ask(instr, "SOUR:VOLT?") : val
-		isnan(step) ? 0.001 : step
+		isnan(val) ? ask(instr, "SOUR:VOLT?") : val,
+		isnan(step) ? 0.001 : step,
 		isnan(delay) ? 0 : delay)
 end
 
@@ -88,11 +90,11 @@ end
 
 type Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
-	label::(String,String)
+	label::Label
 	val::Float64
 end
 
-function Keithley2400Imeas(instr::Keithley2400Vb, label::(String,String) = ("Unnamed Keithley","A"))
+function Keithley2400Imeas(instr::Keithley2400Vb, label::Label = Label("Unnamed Keithley","A"))
 	Keithley2400Imeas(
 		instr,
 		label,

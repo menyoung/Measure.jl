@@ -3,10 +3,10 @@
 export RandomInput
 
 type RandomInput <: Input
-	label::(String,String)
+	label::Label
 end
 
-RandomInput() = RandomInput("Random Channel")
+RandomInput() = RandomInput(Label("Random Channel","au"))
 
 val(ch::RandomInput) = rand()
 measure(ch::RandomInput) = rand()
