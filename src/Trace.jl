@@ -1,40 +1,35 @@
-### Trace: sweep and plot in real time. Save data into filesystem.
+### Trace: sweep and plot in real time.
+# 1. feed data to a "plotting server" by raw TCP socket
+# this is achieved by printing a JSON.
+# 2. save data periodically into the filesystem
 
-export produce_data, trace, traces
+import JSON
 
-import HttpServer
-import WebSockets
-using JSON
+export trace, traces
 
-# a producer function
-function produce_datum(ch0::Output, ch1::Input, x_itr, tstep)
-	for (i,x) in enumerate(x_itr)
+# a producer function takes data: unnecessary in current framework
+# function produce_datum(ch0::Output, ch1::Input, x_itr, tstep)
+# 	for (i,x) in enumerate(x_itr)
+# 		source(ch0, x)
+# 		sleep(tstep)
+# 		produce(i,x,measure(ch1))
+# 	end
+# end
+
+function trace(ch0::Output, ch1::Input, x_itr, tstep, port)
+	# start plot server, take data and print to plotter
+	# `julia PlotServer.jl`
+	plot = connect(port)
+	map(x_itr) do x
 		source(ch0, x)
 		sleep(tstep)
-		produce(i,x,measure(ch1))
+		y = measure(ch1)
+		JSON.print(plot, (x,y))
+		println(plot, "")
+		# printf(plot, "%f %f\n", x, y)
+		y
 	end
-end
-
-function trace(ch0::Output, ch1::Input, x_itr, tstep)
-# consumer function runs the display server
-	done = false
-	data = Array(Float64, length(x_itr))
-	wsh = WebSockets.WebSocketHandler() do req,client
-			msg = WebSockets.read(client)
-			println(msg)
-			for (i,x,y) in Task(() -> produce_datum(ch0, ch1, x_itr, tstep))
-				data[i] = y
-				WebSockets.write(client, json((x,y)))
-	        end
-	        done = true
-	    end
-
-	server = HttpServer.Server(wsh)
-	t = Task(() -> HttpServer.run(server,8080))
-	while true
-		println(done)
-	end
-	data
+	close(plot)
 end
 
 function traces(ch0::Output, ch2::Array{Input,1}, x_itr, tstep)

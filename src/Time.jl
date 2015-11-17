@@ -1,28 +1,37 @@
 ### time.jl a fake output instrument for inputs over time
 # sourcing 0 or negative time resets clock.
-# sourcing positive value returns 
+# sourcing positive value returns when that many seconds passed since reset
 
-export TimeOutput, TimeInput
+export Timing, TimeOutput, TimeInput
+export source, measure
+
+type Timing <: Instrument
+	t0::Float64
+	name::String
+end
+
+Timing() = Timing(time(), "Timing")
 
 type TimeOutput <: Output
-	t0::Float64
+	instr::Timing
 end
-
-type TimeInput <: Input
-	t0::Float64
-end
-
-TimeInput() = TimeInput(time())
-TimeOutput() = TimeOutput(time())
 
 function source(ch::TimeOutput, val::Real)
 	if val < eps()
-		ch.t0 = time()
+		ch.instr.t0 = time()
 	else
-		while val + ch.t0 > time()
+		while val + ch.instr.t0 > time()
 			sleep(0.01)
 		end
 	end
 end
+val(ch::TimeOutput) = time() - ch.instr.t0
+label(ch::TimeOutput) = "Output Timing"
 
-measure(ch::TimeInput) = time() - ch.t0
+type TimeInput <: Input
+	instr::Timing
+end
+
+measure(ch::TimeInput) = time() - ch.instr.t0
+val(ch::TimeInput) = time() - ch.instr.t0
+label(ch::TimeOutput) = "Timing Reading"

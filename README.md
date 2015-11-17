@@ -12,7 +12,8 @@ TODO
 ----
 
 Use Raytheon VISA package
-Make channels parametric: numbers, strings, tuples, etc.
+Igor interfaces? how?
+Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 Philosophy
 ----------
@@ -23,8 +24,6 @@ Multiple dispatch and abstract types should help make re-usable codebase.
 Requirements
 ------------
 
-* PyCall.jl
-* PyVISA in your Python
 * VISA DLL (e.g. from National Instruments) for your PyVISA
 
 Architecture
@@ -36,17 +35,20 @@ plus what idea those types encode, i.e, attributes and methods
 #### Instruments
 * Instrument
 	* standard VISA operations, wrap PyVISA VISA class, basically
+	* other attributes that are physically tied throughout the instrument, i.e. lock-in constant
 * GpibInstrument extends Instrument
 	* in addition, GPIB specific stuff like board number and address!
 	* basically wrap PyVISA's GpibInstrument class
 
 #### Channels
 * Channel
-	* current value, label and unit?
+	* required internal attribute: label::Label
+	* Label is tuple type of 'name' and 'unit'.
 	* make parametric with data type of the value? Good for handling tuples...
+	* expose "lazy" evaluation: val() function
 	* channels can satisfy some of these traits below:
 * Output
-	* source, on/off
+	* source, (optional) on/off
 	* iterable! Just output those things one at a time!
 * Input can be immutable?
 	* measure
@@ -56,36 +58,40 @@ plus what idea those types encode, i.e, attributes and methods
 * BufferedOutput extends Output
 	* load
 	* fire
-* VirtualOutput extends Output
+* VirtualOutput implements BufferedOutput
 	* hooks to DependentOutput channels
-* DependentOutput extends Output
+	* 'load' to change value
+	* 'fire' actually calls source on dependents
+* DependentOutput implements Output
+	* hook to Output channel: source the value!
 	* pointers to VirtualOutput channels
-	* user provides anonymous function that calcluates the output from other outputs
-	* (check for circular dependencies?! for now explicit depth levels)
+	* user provides anonymous function that calcluates the output from closures (e.g. VirtualOutputs)
+	* no nesting.
 * PID extends Channel
 	* setpt, on/off.
 	* P, I, and D.
-* Calculated extends Input
-	* pointers to Channels
+* MathInput implements Input
+	* pointers, closures to Channels
 	* user provides anonymous function that calculates.
 	* use case: resistance bridge to measure temperature, Rcb and Gvb.
+	* also, to save GPIB calls by using "SNAP" inputs then referring to those inputs
 
 #### Arrays of things
 * Array of Channels
 	* way to implement special cases where one command controls multiple channels, e.g. SR830
 
 Instruments host channels, channels may belong to instruments.
-Use closures to link together channels that have to share same attributes.
+Use closures to link together channels that have to share same attributes (?)
 
 ### concrete types. Every field except value should be immutable?  
 * SR830 implements GpibInstrument
 	* SR830 channels:
 		* V implements Output
-		* X Y R Th implement Input
-		* Rcb Gvb implement Calculated
+		* X, Y, R, P, XY, and RP implement Input
+		* Rcb Gvb, etc implement MathInput
 	* attributes: time constant, etc.
 * Keithley2400 implements GpibInstrument
-	* Keithley2400Channels: volt, curr, volt4w
+	* Keithley2400 channels: volt, curr, volt4w
 	* Each channel has sweep rate, step size, etc.
 	* Keithley2400 itself is abtract. Have subtypes for functions (voltage vs current vs 4WOhms)
 * Yokogawa7651
@@ -97,3 +103,27 @@ Use closures to link together channels that have to share same attributes.
 	* channels: H V
 	* attributes: sweep rate, etc.
 * etc. etc.
+
+Usage
+-----
+
+On Keithley 2400, sweep output voltage from -1 to 1 and record the current.
+Then do a line fit to find the resistance.
+```julia
+using VISA
+using Measure
+rm = VISA.viOpenDefaultRM()
+ktest = Keithley2400Vb(rm,"GPIB0::25::INSTR")
+volt = Keithley2400Vsrc(ktest)
+curr = Keithley2400Imeas(ktest)
+vrange = -1:0.001:1
+wave = sweep(volt, curr, vrange, 0);
+A = [ones(length(vrange)) vrange]
+coeff = A \ wave
+1 / coeff[2]
+```
+
+```
+9.963939467124887e6
+```
+The resistance is 9.964 MOhms.
