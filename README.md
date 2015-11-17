@@ -91,7 +91,7 @@ Use closures to link together channels that have to share same attributes (?)
 		* Rcb Gvb, etc implement MathInput
 	* attributes: time constant, etc.
 * Keithley2400 implements GpibInstrument
-	* Keithley2400Channels: volt, curr, volt4w
+	* Keithley2400 channels: volt, curr, volt4w
 	* Each channel has sweep rate, step size, etc.
 	* Keithley2400 itself is abtract. Have subtypes for functions (voltage vs current vs 4WOhms)
 * Yokogawa7651
@@ -107,6 +107,8 @@ Use closures to link together channels that have to share same attributes (?)
 Usage
 -----
 
+On Keithley 2400, sweep output voltage from -1 to 1 and record the current.
+Then do a line fit to find the resistance.
 ```julia
 using VISA
 using Measure
@@ -114,5 +116,13 @@ rm = VISA.viOpenDefaultRM()
 ktest = Keithley2400Vb(rm,"GPIB0::25::INSTR")
 volt = Keithley2400Vsrc(ktest)
 curr = Keithley2400Imeas(ktest)
-wave = sweep(volt, curr, 0:0.001:1, 0)
+vrange = -1:0.001:1
+wave = sweep(volt, curr, vrange, 0);
+A = [ones(length(vrange)) vrange]
+coeff = A \ wave
+1 / coeff[2]
+```
+
+```
+9.963939467124887e6
 ```
