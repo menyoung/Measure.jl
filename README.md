@@ -24,8 +24,6 @@ Multiple dispatch and abstract types should help make re-usable codebase.
 Requirements
 ------------
 
-* PyCall.jl
-* PyVISA in your Python
 * VISA DLL (e.g. from National Instruments) for your PyVISA
 
 Architecture
@@ -105,3 +103,16 @@ Use closures to link together channels that have to share same attributes (?)
 	* channels: H V
 	* attributes: sweep rate, etc.
 * etc. etc.
+
+Usage
+-----
+
+```julia
+using VISA
+using Measure
+rm = VISA.viOpenDefaultRM()
+ktest = Keithley2400Vb(rm,"GPIB0::25::INSTR")
+volt = Keithley2400Vsrc(ktest)
+curr = Keithley2400Imeas(ktest)
+wave = sweep(volt, curr, 0:0.001:1, 0)
+```
