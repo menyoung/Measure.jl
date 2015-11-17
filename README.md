@@ -126,3 +126,4 @@ coeff = A \ wave
 ```
 9.963939467124887e6
 ```
+The resistance is 9.964 MOhms.
