@@ -11,15 +11,14 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 TODO
 ----
 
-Use Raytheon VISA package
-Igor interfaces? how?
-Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
+* Igor interfaces? how?
+* Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 Philosophy
 ----------
 
-Each physically distinct category should be its own concrete type.
-Multiple dispatch and abstract types should help make re-usable codebase.
+* Each physically distinct category should be its own concrete type.
+* Multiple dispatch and abstract types should help make re-usable codebase.
 
 Requirements
 ------------
@@ -127,3 +126,9 @@ coeff = A \ wave
 9.963939467124887e6
 ```
 The resistance is 9.964 MOhms.
+
+# Real time plotting
+
+* run `julia src/PlotServer.jl`
+* point browser to src/plot.html
+* run tracer function `trace(volt, curr, vrange, 0.1, 2014)`

@@ -5,7 +5,7 @@
 
 import JSON
 
-export trace, traces
+export tracer, traces
 
 # a producer function takes data: unnecessary in current framework
 # function produce_datum(ch0::Output, ch1::Input, x_itr, tstep)
@@ -16,7 +16,7 @@ export trace, traces
 # 	end
 # end
 
-function trace(ch0::Output, ch1::Input, x_itr, tstep, port)
+function tracer(ch0::Output, ch1::Input, x_itr, tstep, port)
 	# start plot server, take data and print to plotter
 	# `julia PlotServer.jl`
 	plot = connect(port)
