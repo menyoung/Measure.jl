@@ -8,25 +8,21 @@ I was getting tired of using tables of function names in Igor Pro (which make th
 This is a basic library of types and methods that represent instrument states and operations.
 Also functions that represent typical operations in my lab (sweep instrument 1, take trace of instrument 2)
 
-TODO
-----
+## TODO
 
 * Igor interfaces? how?
 * Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
-Philosophy
-----------
+## Philosophy
 
 * Each physically distinct category should be its own concrete type.
 * Multiple dispatch and abstract types should help make re-usable codebase.
 
-Requirements
-------------
+## Requirements
 
 * VISA DLL (e.g. from National Instruments) for your PyVISA
 
-Architecture
-------------
+## Architecture
 
 ### abstract types
 plus what idea those types encode, i.e, attributes and methods
@@ -103,8 +99,7 @@ Use closures to link together channels that have to share same attributes (?)
 	* attributes: sweep rate, etc.
 * etc. etc.
 
-Usage
------
+## Usage
 
 On Keithley 2400, sweep output voltage from -1 to 1 and record the current.
 Then do a line fit to find the resistance.
@@ -127,7 +122,7 @@ coeff = A \ wave
 ```
 The resistance is 9.964 MOhms.
 
-# Real time plotting
+## Real time plotting
 
 * run `julia src/PlotServer.jl`
 * point browser to src/plot.html
