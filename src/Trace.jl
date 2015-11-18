@@ -6,7 +6,7 @@
 import JSON
 using Plotly, Requests
 
-export streamer, tracer, traces
+export stream, tracer, traces
 
 function openurl(url::AbstractString)
     @osx_only run(`open $url`)
@@ -14,9 +14,9 @@ function openurl(url::AbstractString)
     @linux_only run(`xdg-open $url`)
 end
 
-function streamer(ch0::Output, ch1::Input, x_itr, tstep, token::ASCIIString)
+function stream(ch0::Output, ch1::Input, x_itr, tstep, token::ASCIIString)
 	plt = Plotly.plot([Dict("x"=>Float64[], "y"=>Float64[],
-		"type"=>"scatter", "mode"=>"lines",
+		"type"=>"scatter", "mode"=>"lines", "layout"=>Dict("title"=>"testing"),
 		"stream"=>Dict("token"=>"mgd0qvicun","maxpoints"=>"$(9*length(x_itr))"));])
 	openurl("$(plt["url"]).embed")
 	str = Requests.post_streaming("http://stream.plot.ly/",

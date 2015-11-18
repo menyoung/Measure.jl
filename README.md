@@ -131,7 +131,7 @@ The resistance is 9.964 MOhms.
 import Measure
 const M = Measure
 ...
-wave = M.streamer(volt, curr, vrange, 0.5, "streamingapitokenhere");
+wave = M.stream(volt, curr, vrange, 0.5, "streamingapitokenhere");
 ```
 opens a new plot (need Plotly.jl set up on your computer)
 
