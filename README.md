@@ -21,7 +21,9 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 
 ## Requirements
 
-* VISA DLL (e.g. from National Instruments) for your PyVISA
+* VISA (from National Instruments) drivers
+* Plotly.jl for streaming data
+* other various Julia packages: JSON, Requests
 
 ## Architecture
 
@@ -30,11 +32,10 @@ plus what idea those types encode, i.e, attributes and methods
 
 #### Instruments
 * Instrument
-	* standard VISA operations, wrap PyVISA VISA class, basically
-	* other attributes that are physically tied throughout the instrument, i.e. lock-in constant
+	* "vi" attribute is the ViSession ID onto which standard VISA operations are applied
+	* other attributes that are physically tied to and throughout the instrument, i.e. lock-in constant
 * GpibInstrument extends Instrument
-	* in addition, GPIB specific stuff like board number and address!
-	* basically wrap PyVISA's GpibInstrument class
+	* in addition, GPIB specific stuff like board number and address
 
 #### Channels
 * Channel
@@ -125,6 +126,16 @@ The resistance is 9.964 MOhms.
 
 ## Real time plotting
 
+### Streamer (uses Plotly)
+```julia
+import Measure
+const M = Measure
+...
+wave = M.streamer(volt, curr, vrange, 0.5, "streamingapitokenhere");
+```
+opens a new plot (need Plotly.jl set up on your computer)
+
+### Tracer
 * run `julia src/PlotServer.jl`
 * point browser to `src/plot.html`
 * run tracer function `trace(volt, curr, vrange, 0.1, 2014)`

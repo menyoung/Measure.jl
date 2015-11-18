@@ -1,5 +1,4 @@
 ### Measure.jl package
-# need to include the VISA submodule
 
 module Measure
 
@@ -8,8 +7,6 @@ export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID
 # export ask, read, write
 
 using VISA
-#using PyCall
-#@pyimport visa
 
 ### Channel abstract type and subtypes
 # required attributes:
