@@ -8,7 +8,7 @@ using Plotly, Requests
 
 export streamer, tracer, traces
 
-function openurl(url::String)
+function openurl(url::AbstractString)
     @osx_only run(`open $url`)
     @windows_only run(`start $url`)
     @linux_only run(`xdg-open $url`)

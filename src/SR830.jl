@@ -7,7 +7,7 @@ type SR830 <: GpibInstrument
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
 	tc::Float64 # time constant in s
-	name::String
+	name::AbstractString
 end
 
 # converting back and forth between codes and values for sensitivity/range/time constant/etc

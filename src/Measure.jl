@@ -28,8 +28,8 @@ abstract BufferedOutput <: Output
 abstract PID <: Channel
 
 type Label
-	name::String
-	unit::String
+	name::AbstractString
+	unit::AbstractString
 end
 
 ### Instrument abstract type

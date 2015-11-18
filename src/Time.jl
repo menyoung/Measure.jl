@@ -7,7 +7,7 @@ export source, measure
 
 type Timing <: Instrument
 	t0::Float64
-	name::String
+	name::AbstractString
 end
 
 Timing() = Timing(time(), "Timing")
