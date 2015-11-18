@@ -78,7 +78,7 @@ type SR830Freq <: SR830Output
 	val::Float64
 end
 
-function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Amplitude","V"))
+function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Amplitude","V"))
 	if isnan(val)
 		val = ask(instr, "SLVL?")
 	else
@@ -87,7 +87,7 @@ function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin A
 	SR830Ampl(instr,label,val)
 end
 
-function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Frequency","Hz"))
+function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Frequency","Hz"))
 	if isnan(val)
 		val = ask(instr, "FREQ?")
 	else

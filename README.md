@@ -10,7 +10,8 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 
 ## TODO
 
-* Igor interfaces? how?
+* Data archival via HDF5
+* Real-time plotting features: more than one plot; axis labels
 * Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 ## Philosophy
@@ -125,5 +126,5 @@ The resistance is 9.964 MOhms.
 ## Real time plotting
 
 * run `julia src/PlotServer.jl`
-* point browser to src/plot.html
+* point browser to `src/plot.html`
 * run tracer function `trace(volt, curr, vrange, 0.1, 2014)`
