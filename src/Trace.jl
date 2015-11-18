@@ -15,9 +15,16 @@ function openurl(url::AbstractString)
 end
 
 function stream(ch0::Output, ch1::Input, x_itr, tstep, token::ASCIIString)
-	plt = Plotly.plot([Dict("x"=>Float64[], "y"=>Float64[],
-		"type"=>"scatter", "mode"=>"lines", "layout"=>Dict("title"=>"testing"),
-		"stream"=>Dict("token"=>"mgd0qvicun","maxpoints"=>"$(9*length(x_itr))"));])
+	plt = Plotly.plot(
+    [Dict("x"=>Float64[], "y"=>Float64[],
+		  "type"=>"scatter", "mode"=>"lines",
+		    "stream"=>Dict("token"=>"mgd0qvicun","maxpoints"=>"$(9*length(x_itr))"));],
+    Dict(
+      "layout"=>Dict("title"=>"testing",
+        "xaxis"=>Dict("title"=>"$(label(ch0).name) ($(label(ch0).unit))"),
+        "yaxis"=>Dict("title"=>"$(label(ch1).name) ($(label(ch1).unit))"))
+      )
+    )
 	openurl("$(plt["url"]).embed")
 	str = Requests.post_streaming("http://stream.plot.ly/",
 		headers=Dict("plotly-streamtoken"=>token,
