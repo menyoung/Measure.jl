@@ -13,7 +13,7 @@ type Keithley2400Vb <: Keithley2400 # source voltage, measure current
 end
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name::String = "")
+function Keithley2400Vb(rm::ViSession, rsrc::ASCIIString; range = -1, cmpl = -1, name::AbstractString = "")
 	vi = viOpen(rm, rsrc)
 	viClear(vi)
 	viWrite(vi,"SOUR:FUNC VOLT")

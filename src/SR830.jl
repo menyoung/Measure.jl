@@ -24,7 +24,7 @@ function get_code(conv, target)
 end
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::String = "")
+function SR830(rm::ViSession, rsrc::ASCIIString; sens = -1, res = -1, tc = -1, name::AbstractString = "")
 	vi = viOpen(rm, rsrc)
 	# default parameters: -1 means read the current state and legislate here.
 	if sens < 0
