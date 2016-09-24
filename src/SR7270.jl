@@ -49,10 +49,10 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 		tc = SR7270sockread(sock)
 	else
 		if tc > 1E5
-			warn("SR830 $addr time constant cannot be above 100ks. Was given $tc s. Setting it to max 100ks.")
+			warn("SR7270 $addr time constant cannot be above 100ks. Was given $tc s. Setting it to max 100ks.")
 			tc = 1E5
 		end
-		tc_code = get_code(SR830_tc_conv, tc)
+		tc_code = get_code(SR7270_tc_conv, tc)
 		viWrite(vi,"TC $tc_code")
 	end
 	SR7270(addr, port, sock, sens, tc, param, name == "" ? "Sig Rec 7270 $addr" : name)
@@ -166,5 +166,5 @@ function measure(ch::SR7270R)
 	ch.val = ask(ch.instr, "MAG.")
 end
 function measure(ch::SR7270P)
-	ch.val = ask(ch.instr, "PHA")
+	ch.val = ask(ch.instr, "PHA.")
 end

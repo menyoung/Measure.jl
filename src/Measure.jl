@@ -3,26 +3,27 @@
 module Measure
 
 # export viOpenDefaultRM
-export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
-# export ask, read, write
+export Ch, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated
+export Label, Instrument, VisaInstrument, GpibInstrument, SocketInstrument
+# export val, label, ask, read, write, addr, port, sock
 
 using VISA
 
-### Channel abstract type and subtypes
+### Ch abstract type and subtypes
 # required attributes:
 # 	current value "val" and label "label"
 # required functions:
 
-abstract Channel
+abstract Ch
 
-val(ch::Channel) = ch.val
-label(ch::Channel) = ch.label
+val(ch::Ch) = ch.val
+label(ch::Ch) = ch.label
 
-abstract Input <: Channel
-abstract Output <: Channel
+abstract Input <: Ch
+abstract Output <: Ch
 abstract BufferedInput <: Input
 abstract BufferedOutput <: Output
-abstract PID <: Channel
+abstract PID <: Ch
 
 type Label
 	name::String
@@ -32,14 +33,18 @@ end
 ### Instrument abstract type
 # required attributes:
 #		name: a string. the name.
-# 	vi: instrument handle of type ViSession
-# required functions:
 
 abstract Instrument
+
+name(instr::Instrument) = instr.name
+
+### abstract types and methods for VISA instruments
+# required attributes:
+# 	vi: instrument handle of type ViSession
+
 abstract VisaInstrument <: Instrument
 abstract GpibInstrument <: VisaInstrument
 
-name(instr::Instrument) = instr.name
 
 read(instr::VisaInstrument) = parse(String(viRead(instr.vi)))
 write(instr::VisaInstrument, msg::String) = viWrite(instr.vi,msg)
@@ -48,6 +53,15 @@ function ask(instr::Instrument, msg::String)
 	write(instr,msg)
 	read(instr)
 end
+
+### abstract types and methods for socket instruments
+
+abstract SocketInstrument <: Instrument
+
+# need IP address, port number, and stream object
+addr(instr::SocketInstrument) = instr.addr
+port(instr::SocketInstrument) = instr.port
+sock(instr::SocketInstrument) = instr.sock
 
 # utility functions
 # converting to code that converts to a values for sensitivity/range/time constant/etc
@@ -60,10 +74,6 @@ function get_code(conv, target, start = Int64(0))
 	end
 	code
 end
-
-# socket instruments
-
-include("Socket.jl")
 
 # instrument drivers
 
