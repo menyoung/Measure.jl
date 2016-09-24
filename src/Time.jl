@@ -7,7 +7,7 @@ export source, measure
 
 type Timing <: Instrument
 	t0::Float64
-	name::AbstractString
+	name::String
 end
 
 Timing() = Timing(time(), "Timing")
@@ -34,4 +34,4 @@ end
 
 measure(ch::TimeInput) = time() - ch.instr.t0
 val(ch::TimeInput) = time() - ch.instr.t0
-label(ch::TimeOutput) = "Timing Reading"
+label(ch::TimeInput) = "Timing Reading"

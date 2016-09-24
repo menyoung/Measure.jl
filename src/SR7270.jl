@@ -88,7 +88,7 @@ function SR7270Ampl(instr::SR7270, val::Real, label::Label = Label("Sig Rec 7270
 	SR7270Ampl(instr,val,label)
 end
 
-function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
+function SR7270Freq(instr::SR7270, val::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
 	if isnan(val)
 		val = ask(instr, "FRQ.")
 	else
@@ -99,9 +99,8 @@ end
 
 ### ref voltage Output
 source(ch::SR7270Ampl, val::Real) = write(ch.instr, "OA. $val")
-source(ch::SR7270Freq, val::Real) = write(ch.instr, "OF. $val")
-
-# if 0 or negative then just read
+# source(ch::SR7270Freq, val::Real) = write(ch.instr, "OF. $val")
+# frequency: if 0 or negative then just read
 function source(ch::SR7270Freq, val::Real)
 	if val < eps()
 		ch.val = ask(ch.instr, "FRQ.")

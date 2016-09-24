@@ -8,13 +8,17 @@ using Plotly, Requests
 
 export stream, tracer, traces
 
-function openurl(url::AbstractString)
-    @osx_only run(`open $url`)
-    @windows_only run(`start $url`)
-    @linux_only run(`xdg-open $url`)
+function openurl(url::String)
+    if is_apple()
+      run(`open $url`)
+    elseif is_windows()
+      run(`start $url`)
+    else
+      run(`xdg-open $url`)
+    end
 end
 
-function stream(ch0::Output, ch1::Input, x_itr, tstep, token::ASCIIString)
+function stream(ch0::Output, ch1::Input, x_itr, tstep, token::String)
 	plt = Plotly.plot(
     [Dict("x"=>Float64[], "y"=>Float64[],
 		  "type"=>"scatter", "mode"=>"lines",

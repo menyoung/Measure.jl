@@ -8,12 +8,6 @@ I was getting tired of using tables of function names in Igor Pro (which make th
 This is a basic library of types and methods that represent instrument states and operations.
 Also functions that represent typical operations in my lab (sweep instrument 1, take trace of instrument 2)
 
-## TODO
-
-* Data archival via HDF5
-* Real-time plotting features: more than one plot; axis labels
-* Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
-
 ## Philosophy
 
 * Each physically distinct category should be its own concrete type.
@@ -22,8 +16,8 @@ Also functions that represent typical operations in my lab (sweep instrument 1, 
 ## Requirements
 
 * VISA (from National Instruments) drivers
-* Plotly.jl for streaming data
-* other various Julia packages: JSON, Requests
+* VISA.jl: https://github.com/PainterQubits/VISA.jl
+* Plotly, JSON, Requests (these you can `Pkg.add`)
 
 ## Architecture
 
@@ -83,9 +77,8 @@ Use closures to link together channels that have to share same attributes (?)
 ### concrete types. Every field except value should be immutable?  
 * SR830 implements GpibInstrument
 	* SR830 channels:
-		* V implements Output
+		* V, F implement Output
 		* X, Y, R, P, XY, and RP implement Input
-		* Rcb Gvb, etc implement MathInput
 	* attributes: time constant, etc.
 * Keithley2400 implements GpibInstrument
 	* Keithley2400 channels: volt, curr, volt4w
@@ -99,7 +92,15 @@ Use closures to link together channels that have to share same attributes (?)
 * IPS120
 	* channels: H V
 	* attributes: sweep rate, etc.
+* Signal Recovery 7270 implements SocketInstrument.
+	* same channels as SR830.
 * etc. etc.
+
+## TODO
+
+* Data archival via HDF5
+* Real-time plotting features: more than one plot; axis labels
+* Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
 
 ## Usage
 

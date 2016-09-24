@@ -9,11 +9,11 @@ type Keithley2400Vb <: Keithley2400 # source voltage, measure current
 	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64 	# output range
 	cmpl::Float64 	# compliance current
-	name::AbstractString
+	name::String
 end
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function Keithley2400Vb(rm::ViSession, rsrc::ASCIIString; range = -1, cmpl = -1, name::AbstractString = "")
+function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name::String = "")
 	vi = viOpen(rm, rsrc)
 	viClear(vi)
 	viWrite(vi,"SOUR:FUNC VOLT")
