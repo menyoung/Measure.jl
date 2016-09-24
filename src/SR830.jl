@@ -120,38 +120,38 @@ abstract SR830Input <: Input
 
 type SR830X <: SR830Input
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 type SR830Y <: SR830Input
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 type SR830R <: SR830Input
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 type SR830P <: SR830Input
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 type SR830RP <: SR830Input
 	instr::SR830
-	label::Label
 	val::Tuple{Float64,Float64}
+	label::Label
 end
 
 type SR830XY <: SR830Input
 	instr::SR830
-	label::Label
 	val::Tuple{Float64,Float64}
+	label::Label
 end
 
 function measure(ch::SR830XY)

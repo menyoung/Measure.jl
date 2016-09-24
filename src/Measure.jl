@@ -25,8 +25,8 @@ abstract BufferedOutput <: Output
 abstract PID <: Channel
 
 type Label
-	name::AbstractString
-	unit::AbstractString
+	name::String
+	unit::String
 end
 
 ### Instrument abstract type
@@ -42,9 +42,9 @@ abstract GpibInstrument <: VisaInstrument
 name(instr::Instrument) = instr.name
 
 read(instr::VisaInstrument) = parse(string(viRead(instr.vi)))
-write(instr::VisaInstrument, msg::ASCIIString) = viWrite(instr.vi,msg)
+write(instr::VisaInstrument, msg::String) = viWrite(instr.vi,msg)
 
-function ask(instr::Instrument, msg::ASCIIString)
+function ask(instr::Instrument, msg::String)
 	write(instr,msg)
 	read(instr)
 end
