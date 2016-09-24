@@ -15,7 +15,7 @@ SR830_sens_conv(sens_code) = signif((10 ^ floor((sens_code + 1) / 3)) * ((sens_c
 SR830_tc_conv(tc_code) = (10 ^ floor(tc_code/ 2) * ((tc_code % 2 == 1)? 3 : 1)) * 10e-6
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function SR830(rm::ViSession, rsrc::ASCIIString; sens = -1, res = -1, tc = -1, name::AbstractString = "")
+function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::AbstractString = "")
 	vi = viOpen(rm, rsrc)
 	# default parameters: -1 means read the current state and legislate here.
 	if sens < 0
@@ -49,7 +49,7 @@ function SR830(rm::ViSession, rsrc::ASCIIString; sens = -1, res = -1, tc = -1, n
 			warn("SR830 $rsrc time constant cannot be above 30ks. Was given $tc s. Setting it to max 30ks.")
 			tc = 30000
 		end
-		tc_code = get_code(SR830_tc_conv, sens)
+		tc_code = get_code(SR830_tc_conv, tc)
 		viWrite(vi,"OFLT $tc_code")
 	end
 	SR830(vi, sens, res, tc, name == "" ? "SR830 $rsrc" : name)
@@ -59,14 +59,14 @@ abstract SR830Output <: Output
 
 type SR830Ampl <: SR830Output
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 type SR830Freq <: SR830Output
 	instr::SR830
-	label::Label
 	val::Float64
+	label::Label
 end
 
 function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Amplitude","V"))
@@ -75,7 +75,7 @@ function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin O
 	else
 		write(ch.instr, "SLVL $val")
 	end
-	SR830Ampl(instr,label,val)
+	SR830Ampl(instr,val,label)
 end
 
 function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Frequency","Hz"))
@@ -84,7 +84,7 @@ function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin O
 	else
 		write(ch.instr, "FREQ $val")
 	end
-	SR830Freq(instr,label,val)
+	SR830Freq(instr,val,label)
 end
 
 ### ref voltage Output

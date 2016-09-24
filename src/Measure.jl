@@ -41,7 +41,7 @@ abstract GpibInstrument <: VisaInstrument
 
 name(instr::Instrument) = instr.name
 
-read(instr::VisaInstrument) = parse(string(viRead(instr.vi)))
+read(instr::VisaInstrument) = parse(String(viRead(instr.vi)))
 write(instr::VisaInstrument, msg::String) = viWrite(instr.vi,msg)
 
 function ask(instr::Instrument, msg::String)
@@ -53,8 +53,8 @@ end
 # converting to code that converts to a values for sensitivity/range/time constant/etc
 # start from 0, increment to get smallest code that gives range at least as large as target.
 # conv should be increasing function that takes code to real value
-function get_code(conv, target)
-	code = 0
+function get_code(conv, target, start = Int64(0))
+	code = start
 	while (target > conv(code))
 		code += 1
 	end
