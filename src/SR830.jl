@@ -93,7 +93,7 @@ function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin O
 	else
 		write(ch.instr, "FREQ $val")
 	end
-	SR830Ampl(instr,label,val)
+	SR830Freq(instr,label,val)
 end
 
 ### ref voltage Output

@@ -36,17 +36,22 @@ end
 # required functions:
 
 abstract Instrument
-abstract GpibInstrument <: Instrument
+abstract VisaInstrument <: Instrument
+abstract GpibInstrument <: VisaInstrument
 
 name(instr::Instrument) = instr.name
 
-read(instr::Instrument) = parse(bytestring(viRead(instr.vi)))
-write(instr::Instrument, msg::ASCIIString) = viWrite(instr.vi,msg)
+read(instr::VisaInstrument) = parse(string(viRead(instr.vi)))
+write(instr::VisaInstrument, msg::ASCIIString) = viWrite(instr.vi,msg)
 
 function ask(instr::Instrument, msg::ASCIIString)
 	write(instr,msg)
 	read(instr)
 end
+
+# socket instruments
+
+include("Socket.jl")
 
 # instrument drivers
 
