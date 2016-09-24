@@ -1,7 +1,5 @@
 # Measure.jl
 
-[![Build Status](https://travis-ci.org/menyoung/Measure.jl.svg?branch=master)](https://travis-ci.org/menyoung/Measure.jl)
-
 electron goes in, electron goes out; you can't explain that!
 
 I was getting tired of using tables of function names in Igor Pro (which make the instrument calls) to be looked up by the sweep code.
@@ -101,6 +99,7 @@ Use closures to link together channels that have to share same attributes (?)
 * Data archival via HDF5
 * Real-time plotting features: more than one plot; axis labels
 * Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
+* [![Build Status](https://travis-ci.org/menyoung/Measure.jl.svg?branch=master)](https://travis-ci.org/menyoung/Measure.jl)
 
 ## Usage
 
