@@ -2,7 +2,7 @@
 
 module Measure
 
-export viOpenDefaultRM
+# export viOpenDefaultRM
 export Channel, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated, Label, Instrument, GpibInstrument
 # export ask, read, write
 
@@ -49,6 +49,18 @@ function ask(instr::Instrument, msg::String)
 	read(instr)
 end
 
+# utility functions
+# converting to code that converts to a values for sensitivity/range/time constant/etc
+# start from 0, increment to get smallest code that gives range at least as large as target.
+# conv should be increasing function that takes code to real value
+function get_code(conv, target)
+	code = 0
+	while (target > conv(code))
+		code += 1
+	end
+	code
+end
+
 # socket instruments
 
 include("Socket.jl")
@@ -60,9 +72,10 @@ include("Random.jl")
 include("Agilent34401a.jl")
 include("Keithley2400.jl")
 include("SR830.jl")
+include("SR7270.jl")
 include("Virtual.jl")
 
-# utility functions
+# user functions
 
 include("Sweep.jl")
 include("Trace.jl")

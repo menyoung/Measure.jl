@@ -1,6 +1,6 @@
 ### SR830 concrete types and methods
 
-export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, measure
+export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, source, measure
 
 type SR830 <: GpibInstrument
 	vi::ViSession # this is the GpibInstrument object!
@@ -13,15 +13,6 @@ end
 # converting back and forth between codes and values for sensitivity/range/time constant/etc
 SR830_sens_conv(sens_code) = signif((10 ^ floor((sens_code + 1) / 3)) * ((sens_code % 3 == 0)? 2 : ((sens_code % 3 == 1)? 5 : 1)) * 1e-9, 2)
 SR830_tc_conv(tc_code) = (10 ^ floor(tc_code/ 2) * ((tc_code % 2 == 1)? 3 : 1)) * 10e-6
-
-# start from 0, increment to get smallest code that gives range at least as large as target.
-function get_code(conv, target)
-	code = 0
-	while (target > conv(code))
-		code += 1
-	end
-	code
-end
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
 function SR830(rm::ViSession, rsrc::ASCIIString; sens = -1, res = -1, tc = -1, name::AbstractString = "")
@@ -61,7 +52,7 @@ function SR830(rm::ViSession, rsrc::ASCIIString; sens = -1, res = -1, tc = -1, n
 		tc_code = get_code(SR830_tc_conv, sens)
 		viWrite(vi,"OFLT $tc_code")
 	end
-	SR830(vi, sens, res, tc, name == "" ? rsrc : name)
+	SR830(vi, sens, res, tc, name == "" ? "SR830 $rsrc" : name)
 end
 
 abstract SR830Output <: Output
