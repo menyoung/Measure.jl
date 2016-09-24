@@ -24,16 +24,19 @@ plus what idea those types encode, i.e, attributes and methods
 
 #### Instruments
 * Instrument
-	* "vi" attribute is the ViSession ID onto which standard VISA operations are applied
+	* name is the only required attribute
 	* other attributes that are physically tied to and throughout the instrument, i.e. lock-in constant
-* GpibInstrument extends Instrument
+* VisaInstrument extends Instrument
+	* "vi" attribute is the ViSession ID onto which standard VISA operations are applied
+* GpibInstrument extends VisaInstrument
 	* in addition, GPIB specific stuff like board number and address
+* SocketInstrument extends Instrument
+	* IP address, port number, and socket object
 
 #### Channels
 * Channel
 	* required internal attribute: label::Label
 	* Label is tuple type of 'name' and 'unit'.
-	* make parametric with data type of the value? Good for handling tuples...
 	* expose "lazy" evaluation: val() function
 	* channels can satisfy some of these traits below:
 * Output
