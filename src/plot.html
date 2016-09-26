@@ -78,7 +78,7 @@ body {
 
   function doSend(message)
   {
-    writeToScreen("SENT: " + message); 
+    writeToScreen("SENT: " + message);
     websocket.send(message);
   }
 
@@ -95,11 +95,11 @@ body {
   var margin = {top: 20, right: 20, bottom: 20, left: 40},
   width = 960 - margin.left - margin.right,
   height = 500 - margin.top - margin.bottom;
-   
+
   var x = d3.scale.linear()
     .domain([0, 10])
     .range([0, width]);
-   
+
   var y = d3.scale.linear()
     .domain([0, 1])
     .range([height, 0]);
@@ -115,7 +115,7 @@ body {
   var line = d3.svg.line()
     .x(function(d) { return x(d[0]); })
     .y(function(d) { return y(d[1]); });
-   
+
   var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -136,7 +136,7 @@ body {
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text("Sepal Width (cm)");
+      .text("X Axis Label (Unit)");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -147,7 +147,7 @@ body {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Sepal Length (cm)")
+      .text("Y Axis Label (Unit)")
 
   function tick() {
 
@@ -161,7 +161,7 @@ body {
 
     svg.selectAll("g.y.axis")
       .call(yAxis);
-    
+
     // redraw the line
 
     svg.selectAll("path.line")

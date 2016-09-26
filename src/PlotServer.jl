@@ -12,10 +12,10 @@ using HttpServer
 using WebSockets
 using JSON
 
-# port numbers. TODO: get as command line arguments.
+# port numbers taken in as command line arguments.
 
-const tcport = 2014
-const httport = 8080
+const tcport = parse(ARGS[1])
+const httport = parse(ARGS[2])
 
 # start listener on tcport
 
@@ -58,6 +58,11 @@ wsh = WebSocketHandler() do req,client
   #   end
 
 # start http server
+onepage = readstring(Pkg.dir("Measure","src","plot.html"))
+httph = HttpHandler() do req::Request, res::Response
+  Response(onepage)
+end
 
-server = Server(wsh)
+server = Server(httph, wsh)
+# server = Server(wsh)
 run(server, httport)
