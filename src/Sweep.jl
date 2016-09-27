@@ -12,7 +12,7 @@ end
 
 function sweeps{T <: Input}(ch0::Output, ch2::Array{T,1}, x_itr, tstep)
 	data = Array(Float64, length(x_itr), length(ch2))
-	source(ch0,start(x))
+	source(ch0,first(x_itr))
 	sleep(tstep)
 	for (i,x) in enumerate(x_itr)
 		source(ch0,x)

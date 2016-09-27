@@ -59,12 +59,14 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 end
 
 function read(instr::SR7270)
-	flush(instr.sock)
 	msg = readavailable(instr.sock)
 	# store the status and overload bit strings as strings
 	instr.param["stat"] = bits(msg[end-1])
 	instr.param["over"] = bits(msg[end])
-	parse(String(msg[1:findfirst(msg,UInt8('\0'))-1]))
+	while ((i = findfirst(msg,0)) > 0)
+    deleteat!(msg,i:i+2)
+	end
+	parse(String(msg))
 	# there are three termination characters...
 end
 function write(instr::SR7270, msg::String)
@@ -88,7 +90,7 @@ type SR7270Freq <: SR7270Output
 end
 
 function SR7270Ampl(instr::SR7270, val::Real, label::Label = Label("Sig Rec 7270 Osc Ampl","V"))
-	write(instr, "OA. $val")
+	ask(instr, "OA. $val")
 	SR7270Ampl(instr,val,label)
 end
 
@@ -97,7 +99,7 @@ function SR7270Freq(instr::SR7270, val::Real = NaN, label::Label = Label("Sig Re
 		val = ask(instr, "FRQ.\n")
 	else
 		val = round(1000.0*val)/1000.0
-		write(instr, "OF. $val\n")
+		ask(instr, "OF. $val\n")
 	end
 	SR7270Freq(instr,val,label)
 end
