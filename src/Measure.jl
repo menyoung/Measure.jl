@@ -2,6 +2,9 @@
 
 module Measure
 
+# need to import base functions to extend with more methods
+import Base.read, Base.write
+
 # export viOpenDefaultRM
 export Ch, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated
 export Label, Instrument, VisaInstrument, GpibInstrument, SocketInstrument
@@ -44,7 +47,6 @@ name(instr::Instrument) = instr.name
 
 abstract VisaInstrument <: Instrument
 abstract GpibInstrument <: VisaInstrument
-
 
 read(instr::VisaInstrument) = parse(String(viRead(instr.vi)))
 write(instr::VisaInstrument, msg::String) = viWrite(instr.vi,msg)

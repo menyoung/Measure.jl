@@ -49,7 +49,7 @@ function tracer(ch0::Output, ch1::Input, x_itr, tstep, port)
   httport = 8080
   p = spawn(`julia $server $port $httport`)
   finalizer(p, kill)
-  sleep(1)
+  sleep(2)
 	plot = connect(port)
   openurl("http://localhost:8080")
 	wave = map(x_itr) do x

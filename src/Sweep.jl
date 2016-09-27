@@ -10,8 +10,10 @@ function sweep(ch0::Output, ch1::Input, x_itr, tstep)
 	end
 end
 
-function sweeps(ch0::Output, ch2::Array{Input,1}, x_itr, tstep)
+function sweeps{T <: Input}(ch0::Output, ch2::Array{T,1}, x_itr, tstep)
 	data = Array(Float64, length(x_itr), length(ch2))
+	source(ch0,start(x))
+	sleep(tstep)
 	for (i,x) in enumerate(x_itr)
 		source(ch0,x)
 		sleep(tstep)

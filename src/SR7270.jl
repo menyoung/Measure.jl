@@ -34,7 +34,7 @@ end
 function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict = Dict(), name::String = "")
 	sock = connect(addr, port)
 	if sens < 0
-		write(sock,"SEN.")
+		write(sock,"SEN.\n")
 		sens = SR7270sockread(sock)
 	else
 		if sens > 1
@@ -42,10 +42,10 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 			sens = 1
 		end
 		sens_code = get_code(SR7270_sens_conv, sens, 1)
-		write(sock,"SEN $sens_code")
+		write(sock,"SEN $sens_code\n")
 	end
 	if tc < 0
-		write(sock,"TC.")
+		write(sock,"TC.\n")
 		tc = SR7270sockread(sock)
 	else
 		if tc > 1E5
@@ -53,7 +53,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 			tc = 1E5
 		end
 		tc_code = get_code(SR7270_tc_conv, tc)
-		viWrite(vi,"TC $tc_code")
+		viWrite(vi,"TC $tc_code\n")
 	end
 	SR7270(addr, port, sock, sens, tc, param, name == "" ? "Sig Rec 7270 $addr" : name)
 end
@@ -64,10 +64,14 @@ function read(instr::SR7270)
 	# store the status and overload bit strings as strings
 	instr.param["stat"] = bits(msg[end-1])
 	instr.param["over"] = bits(msg[end])
-	parse(String(msg[1:findfirst(msg,'\0')-1]))
+	parse(String(msg[1:findfirst(msg,UInt8('\0'))-1]))
 	# there are three termination characters...
 end
-write(instr::SR7270, msg::String) = write(instr.sock,msg)
+function write(instr::SR7270, msg::String)
+  flush(instr.sock)
+	write(instr.sock,string(msg,"\n"))
+	flush(instr.sock)
+end
 
 abstract SR7270Output <: Output
 
@@ -90,23 +94,24 @@ end
 
 function SR7270Freq(instr::SR7270, val::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
 	if isnan(val)
-		val = ask(instr, "FRQ.")
+		val = ask(instr, "FRQ.\n")
 	else
-		write(ch.instr, "OF. $val")
+		val = round(1000.0*val)/1000.0
+		write(instr, "OF. $val\n")
 	end
-	SR830Freq(instr,val,label)
+	SR7270Freq(instr,val,label)
 end
 
 ### ref voltage Output
-source(ch::SR7270Ampl, val::Real) = write(ch.instr, "OA. $val")
+source(ch::SR7270Ampl, val::Real) = ask(ch.instr, "OA. $val")
 # source(ch::SR7270Freq, val::Real) = write(ch.instr, "OF. $val")
 # frequency: if 0 or negative then just read
 function source(ch::SR7270Freq, val::Real)
 	if val < eps()
-		ch.val = ask(ch.instr, "FRQ.")
+		ch.val = ask(ch.instr, "FRQ.\n")
 	else
-		ch.val = val
-		write(ch.instr, "OF. $val")
+		ch.val = round(1000.0*val)/1000.0
+		ask(ch.instr, "OF. $(ch.val)")
 	end
 end
 
