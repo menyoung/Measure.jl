@@ -60,41 +60,41 @@ end
 type Keithley2400Vsrc <: Output
 	instr::Keithley2400Vb
 	label::Label
-	val::Float64
+	value::Float64
 	step::Float64
 	delay::Float64
 end
 
-function Keithley2400Vsrc(instr::Keithley2400Vb, val::Real = NaN, step::Real = NaN, delay::Real = NaN, label::Label = Label("Unnamed Keithley","V"))
+function Keithley2400Vsrc(instr::Keithley2400Vb, value::Real = NaN, step::Real = NaN, delay::Real = NaN, label::Label = Label("Unnamed Keithley","V"))
 	Keithley2400Vsrc(
 		instr,
 		label,
-		isnan(val) ? ask(instr, "SOUR:VOLT?") : val,
+		isnan(value) ? ask(instr, "SOUR:VOLT?") : value,
 		isnan(step) ? 0.001 : step,
 		isnan(delay) ? 0 : delay)
 end
 
-function source(ch::Keithley2400Vsrc, val::Real)
+function source(ch::Keithley2400Vsrc, value::Real)
 	timer = Timing()
 	timeOut = TimeOutput(timer)
 	timeIn = TimeInput(timer)
 	time = 0.0
-	while (abs(val - ch.val) > ch.step)
+	while (abs(value - ch.value) > ch.step)
 		time += ch.delay
 		source(timeOut, time)
-		ch.val += (val > ch.val) ? ch.step : -ch.step
-		write(ch.instr, "SOUR:VOLT $(ch.val)")
+		ch.value += (value > ch.value) ? ch.step : -ch.step
+		write(ch.instr, "SOUR:VOLT $(ch.value)")
 	end
 	time += ch.delay
 	source(timeOut, time)
-	ch.val = val
-	write(ch.instr, "SOUR:VOLT $(ch.val)")
+	ch.value = value
+	write(ch.instr, "SOUR:VOLT $(ch.value)")
 end
 
 type Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
 	label::Label
-	val::Float64
+	value::Float64
 end
 
 function Keithley2400Imeas(instr::Keithley2400Vb, label::Label = Label("Unnamed Keithley","A"))
@@ -105,9 +105,9 @@ function Keithley2400Imeas(instr::Keithley2400Vb, label::Label = Label("Unnamed 
 end
 
 function measure(ch::Keithley2400Imeas)
-	ch.val = ask(ch.instr, "READ?")
+	ch.value = ask(ch.instr, "READ?")
 end
 trigger(ch::Keithley2400Imeas) = write(ch.instr, "INIT")
 function fetch(ch::Keithley2400Imeas)
-	ch.val = ask(ch.instr, "FETC?")
+	ch.value = ask(ch.instr, "FETC?")
 end

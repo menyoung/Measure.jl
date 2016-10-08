@@ -79,41 +79,41 @@ abstract SR7270Output <: Output
 
 type SR7270Ampl <: SR7270Output
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR7270Freq <: SR7270Output
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
-function SR7270Ampl(instr::SR7270, val::Real, label::Label = Label("Sig Rec 7270 Osc Ampl","V"))
-	ask(instr, "OA. $val")
-	SR7270Ampl(instr,val,label)
+function SR7270Ampl(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 Osc Ampl","V"))
+	ask(instr, "OA. $value")
+	SR7270Ampl(instr,value,label)
 end
 
-function SR7270Freq(instr::SR7270, val::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
-	if isnan(val)
-		val = ask(instr, "FRQ.\n")
+function SR7270Freq(instr::SR7270, value::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
+	if isnan(value)
+		value = ask(instr, "FRQ.\n")
 	else
-		val = round(1000.0*val)/1000.0
-		ask(instr, "OF. $val\n")
+		value = round(1000.0*value)/1000.0
+		ask(instr, "OF. $value\n")
 	end
-	SR7270Freq(instr,val,label)
+	SR7270Freq(instr,value,label)
 end
 
 ### ref voltage Output
-source(ch::SR7270Ampl, val::Real) = ask(ch.instr, "OA. $val")
-# source(ch::SR7270Freq, val::Real) = write(ch.instr, "OF. $val")
+source(ch::SR7270Ampl, value::Real) = ask(ch.instr, "OA. $value")
+# source(ch::SR7270Freq, value::Real) = write(ch.instr, "OF. $value")
 # frequency: if 0 or negative then just read
-function source(ch::SR7270Freq, val::Real)
-	if val < eps()
-		ch.val = ask(ch.instr, "FRQ.\n")
+function source(ch::SR7270Freq, value::Real)
+	if value < eps()
+		ch.value = ask(ch.instr, "FRQ.\n")
 	else
-		ch.val = round(1000.0*val)/1000.0
-		ask(ch.instr, "OF. $(ch.val)")
+		ch.value = round(1000.0*value)/1000.0
+		ask(ch.instr, "OF. $(ch.value)")
 	end
 end
 
@@ -121,56 +121,56 @@ abstract SR7270Input <: Input
 
 type SR7270X <: SR7270Input
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR7270Y <: SR7270Input
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR7270R <: SR7270Input
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR7270P <: SR7270Input
 	instr::SR7270
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR7270RP <: SR7270Input
 	instr::SR7270
-	val::Tuple{Float64,Float64}
+	value::Tuple{Float64,Float64}
 	label::Label
 end
 
 type SR7270XY <: SR7270Input
 	instr::SR7270
-	val::Tuple{Float64,Float64}
+	value::Tuple{Float64,Float64}
 	label::Label
 end
 
 function measure(ch::SR7270XY)
-	ch.val = ask(ch.instr, "XY.")
+	ch.value = ask(ch.instr, "XY.")
 end
 function measure(ch::SR7270RP)
-	ch.val = ask(ch.instr, "MP.")
+	ch.value = ask(ch.instr, "MP.")
 end
 
 function measure(ch::SR7270X)
-	ch.val = ask(ch.instr, "X.")
+	ch.value = ask(ch.instr, "X.")
 end
 function measure(ch::SR7270Y)
-	ch.val = ask(ch.instr, "Y.")
+	ch.value = ask(ch.instr, "Y.")
 end
 function measure(ch::SR7270R)
-	ch.val = ask(ch.instr, "MAG.")
+	ch.value = ask(ch.instr, "MAG.")
 end
 function measure(ch::SR7270P)
-	ch.val = ask(ch.instr, "PHA.")
+	ch.value = ask(ch.instr, "PHA.")
 end

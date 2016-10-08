@@ -33,7 +33,7 @@ This is a basic library of types and methods that represent input and output sig
 * Signal
 	* required internal attribute: label::Label
 	* Label is tuple type of 'name' and 'unit'.
-	* expose "lazy" evaluation: val() function or .val attribute
+	* must expose "lazy" evaluation: value() function or .value attribute
 	* channels can satisfy some of these traits below:
 * Output extends Signal
 	* source, (optional) on/off
@@ -95,6 +95,7 @@ Use closures to link together Signals that have to share same attributes (?)
 
 ## TODO
 
+* docstrings
 * Automatic data archival via HDF5 or JLD
 * Real-time plotting features: more than one plot; axis labels
 * Make channels parametric: numbers, strings, tuples, etc. this will make everything safe
@@ -104,7 +105,7 @@ Use closures to link together Signals that have to share same attributes (?)
 
 On Keithley 2400 (on GPIB address 25), sweep output voltage from -1 to 1 and record the current. Then do a line fit to find the resistance.
 ```julia
-using VISA
+import VISA
 using Measure
 rm = VISA.viOpenDefaultRM()
 ktest = Keithley2400Vb(rm,"GPIB0::25::INSTR")
@@ -138,6 +139,24 @@ for (i,a) in enumerate(a1)
     source(chA,a)
     data1[:,:,i] = sweeps(chF,[chX,chY],f1,5)
 end
+```
+
+### MathInput
+This example shows off the power of abstraction.
+```julia
+import Measure
+M = Measure
+rand1,rand2 = M.RandomInput(),M.RandomInput()
+rand3 = M.MathInput(() -> M.measure(rand1) + M.measure(rand2) * im)
+rand4 = M.MathInput(() -> M.measure(rand1) + M.value(rand2) * im)
+println(M.measure(rand3))
+println(M.measure(rand4))
+println(M.fetch(rand4))
+```
+```
+0.7279053044351118 + 0.3272338358682625im
+0.5569465823509747 + 0.5569465823509747im
+0.5569465823509747 + 0.5569465823509747im
 ```
 
 ### Real time plotting

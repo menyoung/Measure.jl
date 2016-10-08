@@ -59,51 +59,51 @@ abstract SR830Output <: Output
 
 type SR830Ampl <: SR830Output
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR830Freq <: SR830Output
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
-function SR830Ampl(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Amplitude","V"))
-	if isnan(val)
-		val = ask(instr, "SLVL?")
+function SR830Ampl(instr::SR830, value::Real = NaN, label::Label = Label("Lockin Output Amplitude","V"))
+	if isnan(value)
+		value = ask(instr, "SLVL?")
 	else
-		write(ch.instr, "SLVL $val")
+		write(ch.instr, "SLVL $value")
 	end
-	SR830Ampl(instr,val,label)
+	SR830Ampl(instr,value,label)
 end
 
-function SR830Freq(instr::SR830, val::Real = NaN, label::Label = Label("Lockin Output Frequency","Hz"))
-	if isnan(val)
-		val = ask(instr, "FREQ?")
+function SR830Freq(instr::SR830, value::Real = NaN, label::Label = Label("Lockin Output Frequency","Hz"))
+	if isnan(value)
+		value = ask(instr, "FREQ?")
 	else
-		write(ch.instr, "FREQ $val")
+		write(ch.instr, "FREQ $value")
 	end
-	SR830Freq(instr,val,label)
+	SR830Freq(instr,value,label)
 end
 
 ### ref voltage Output
 # if 0 or negative then just read
-function source(ch::SR830Ampl, val::Real)
-	if val < eps()
-		ch.val = ask(ch.instr, "SLVL?")
+function source(ch::SR830Ampl, value::Real)
+	if value < eps()
+		ch.value = ask(ch.instr, "SLVL?")
 	else
-		ch.val = val
-		write(ch.instr, "SLVL $val")
+		ch.value = value
+		write(ch.instr, "SLVL $value")
 	end
 end
 
-function source(ch::SR830Freq, val::Real)
-	if val < eps()
-		ch.val = ask(ch.instr, "FREQ?")
+function source(ch::SR830Freq, value::Real)
+	if value < eps()
+		ch.value = ask(ch.instr, "FREQ?")
 	else
-		ch.val = val
-		write(ch.instr, "FREQ $val")
+		ch.value = value
+		write(ch.instr, "FREQ $value")
 	end
 end
 
@@ -111,56 +111,56 @@ abstract SR830Input <: Input
 
 type SR830X <: SR830Input
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR830Y <: SR830Input
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR830R <: SR830Input
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR830P <: SR830Input
 	instr::SR830
-	val::Float64
+	value::Float64
 	label::Label
 end
 
 type SR830RP <: SR830Input
 	instr::SR830
-	val::Tuple{Float64,Float64}
+	value::Tuple{Float64,Float64}
 	label::Label
 end
 
 type SR830XY <: SR830Input
 	instr::SR830
-	val::Tuple{Float64,Float64}
+	value::Tuple{Float64,Float64}
 	label::Label
 end
 
 function measure(ch::SR830XY)
-	ch.val = ask(ch.instr, "SNAP? 1,2")
+	ch.value = ask(ch.instr, "SNAP? 1,2")
 end
 function measure(ch::SR830RP)
-	ch.val = ask(ch.instr, "SNAP? 3,4")
+	ch.value = ask(ch.instr, "SNAP? 3,4")
 end
 
 function measure(ch::SR830X)
-	ch.val = ask(ch.instr, "OUTP? 1")
+	ch.value = ask(ch.instr, "OUTP? 1")
 end
 function measure(ch::SR830Y)
-	ch.val = ask(ch.instr, "OUTP? 2")
+	ch.value = ask(ch.instr, "OUTP? 2")
 end
 function measure(ch::SR830R)
-	ch.val = ask(ch.instr, "OUTP? 3")
+	ch.value = ask(ch.instr, "OUTP? 3")
 end
 function measure(ch::SR830P)
-	ch.val = ask(ch.instr, "OUTP? 4")
+	ch.value = ask(ch.instr, "OUTP? 4")
 end

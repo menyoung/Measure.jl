@@ -14,13 +14,13 @@ end
 type Agilent34401aVDC <: BufferedInput
 	instr::Agilent34401a
 	label::Label
-	val::Float64
+	value::Float64
 end
 
 function measure(ch::Agilent34401aVDC)
-	ch.val = ask(ch.instr, "MEAS:VOLT:DC?")
+	ch.value = ask(ch.instr, "MEAS:VOLT:DC?")
 end
 trigger(ch::Agilent34401aVDC) = write(ch.instr, "INIT")
 function fetch(ch::Agilent34401aVDC)
-	ch.val = ask(ch.instr, "FETC?")
+	ch.value = ask(ch.instr, "FETC?")
 end

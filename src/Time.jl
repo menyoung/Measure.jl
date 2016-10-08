@@ -16,16 +16,16 @@ type TimeOutput <: Output
 	instr::Timing
 end
 
-function source(ch::TimeOutput, val::Real)
-	if val < eps()
+function source(ch::TimeOutput, value::Real)
+	if value < eps()
 		ch.instr.t0 = time()
 	else
-		while val + ch.instr.t0 > time()
+		while value + ch.instr.t0 > time()
 			sleep(0.01)
 		end
 	end
 end
-val(ch::TimeOutput) = time() - ch.instr.t0
+value(ch::TimeOutput) = time() - ch.instr.t0
 label(ch::TimeOutput) = "Output Timing"
 
 type TimeInput <: Input
@@ -33,5 +33,5 @@ type TimeInput <: Input
 end
 
 measure(ch::TimeInput) = time() - ch.instr.t0
-val(ch::TimeInput) = time() - ch.instr.t0
+value(ch::TimeInput) = time() - ch.instr.t0
 label(ch::TimeInput) = "Timing Reading"

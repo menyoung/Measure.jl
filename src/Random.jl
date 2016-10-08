@@ -3,12 +3,12 @@
 export RandomInput
 
 type RandomInput <: Input
+	value::Float64
 	label::Label
 end
 
-RandomInput() = RandomInput(Label("Random Channel","au"))
+RandomInput() = RandomInput(rand(),Label("Random Signal","au"))
 
-val(ch::RandomInput) = rand()
-measure(ch::RandomInput) = rand()
-trigger(ch::RandomInput) = nothing
-fetch(ch::RandomInput) = rand()
+measure(ch::RandomInput) = ch.value = rand()
+trigger(ch::RandomInput) = ch.value = rand()
+fetch(ch::RandomInput) = ch.value

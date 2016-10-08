@@ -1,5 +1,4 @@
 ### Measure.jl package
-
 module Measure
 
 # need to import base functions to extend with more methods
@@ -8,19 +7,19 @@ import Base.read, Base.write
 # export viOpenDefaultRM
 export Signal, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated
 export Label, Instrument, VisaInstrument, GpibInstrument, SocketInstrument
-# export val, label, ask, read, write, addr, port, sock
+export value, label, ask, read, write, addr, port, sock, version
 
 using VISA
 
 ### Signal abstract type and subtypes
 # required attributes:
-# 	current value "val" and label "label"
+# 	current value "value" and label "label"
 # required functions:
 
 abstract Signal
 
-val(s::Signal) = ch.val
-label(s::Signal) = ch.label
+value(s::Signal) = s.value
+label(s::Signal) = s.label
 
 abstract Input <: Signal
 abstract Output <: Signal
@@ -76,6 +75,8 @@ function get_code(conv, target, start = Int64(0))
 	end
 	code
 end
+
+version() = "5325"
 
 # instrument drivers
 
