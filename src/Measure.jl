@@ -6,27 +6,27 @@ module Measure
 import Base.read, Base.write
 
 # export viOpenDefaultRM
-export Ch, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated
+export Signal, Input, Output, BufferedInput, BufferedOutput, VirtualOutput, PID, Calculated
 export Label, Instrument, VisaInstrument, GpibInstrument, SocketInstrument
 # export val, label, ask, read, write, addr, port, sock
 
 using VISA
 
-### Ch abstract type and subtypes
+### Signal abstract type and subtypes
 # required attributes:
 # 	current value "val" and label "label"
 # required functions:
 
-abstract Ch
+abstract Signal
 
-val(ch::Ch) = ch.val
-label(ch::Ch) = ch.label
+val(s::Signal) = ch.val
+label(s::Signal) = ch.label
 
-abstract Input <: Ch
-abstract Output <: Ch
+abstract Input <: Signal
+abstract Output <: Signal
 abstract BufferedInput <: Input
 abstract BufferedOutput <: Output
-abstract PID <: Ch
+abstract PID <: Signal
 
 type Label
 	name::String
@@ -91,7 +91,6 @@ include("Virtual.jl")
 
 include("Sweep.jl")
 include("Trace.jl")
-
 include("Master.jl")
 
 end # module

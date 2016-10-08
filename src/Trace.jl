@@ -51,7 +51,7 @@ function tracer(ch0::Output, ch1::Input, x_itr, tstep, port)
   finalizer(p, kill)
   sleep(2)
 	plot = connect(port)
-  openurl("http://localhost:8080")
+  openurl("http://localhost:$httport")
 	wave = map(x_itr) do x
 		source(ch0, x)
 		sleep(tstep)
