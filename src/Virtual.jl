@@ -45,6 +45,10 @@ function fire(ch::VirtualOutput)
 	end
 end
 
+"""
+$(TYPEDEF)
+$(FIELDS)
+"""
 type MathInput <: Input
 	f::Function
 	value
@@ -53,5 +57,7 @@ end
 
 MathInput(f::Function, label::Label = Label("Unnamed Math","")) = MathInput(f, f(), label)
 
-measure(ch::MathInput) = ch.value = ch.f()
-fetch(ch::MathInput) = ch.value
+"$(SIGNATURES) calls the anonymous function `f()` by which the MathInput is constructed,
+and also stores the the return value as `.value`"
+measure(s::MathInput) = s.value = s.f()
+fetch(s::MathInput) = s.value
