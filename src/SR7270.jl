@@ -1,6 +1,6 @@
 ### Signal Recovery 7270 concrete types and methods
 
-export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270Input, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, source, measure
+export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1, SR7270Input, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, source, measure
 
 type SR7270 <: SocketInstrument
 	addr::String # this is the IP address as a string
@@ -89,6 +89,17 @@ type SR7270Freq <: SR7270Output
 	label::Label
 end
 
+type SR7270DAC1 <: SR7270Output
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
+function SR7270DAC1(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 DAC1 output","V"))
+	ask(instr, "OA. $value")
+	SR7270Ampl(instr,value,label)
+end
+
 function SR7270Ampl(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 Osc Ampl","V"))
 	ask(instr, "OA. $value")
 	SR7270Ampl(instr,value,label)
@@ -104,6 +115,7 @@ function SR7270Freq(instr::SR7270, value::Real = NaN, label::Label = Label("Sig 
 	SR7270Freq(instr,value,label)
 end
 
+source(ch::SR7270DAC1, value::Real) = ask(ch.instr, "DAC. 1 $value")
 ### ref voltage Output
 source(ch::SR7270Ampl, value::Real) = ask(ch.instr, "OA. $value")
 # source(ch::SR7270Freq, value::Real) = write(ch.instr, "OF. $value")
