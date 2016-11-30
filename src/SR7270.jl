@@ -107,10 +107,10 @@ end
 
 function SR7270Freq(instr::SR7270, value::Real = NaN, label::Label = Label("Sig Rec 7270 Osc Freq","Hz"))
 	if isnan(value)
-		value = ask(instr, "FRQ.\n")
+		value = ask(instr, "FRQ.")
 	else
 		value = round(1000.0*value)/1000.0
-		ask(instr, "OF. $value\n")
+		ask(instr, "OF. $value")
 	end
 	SR7270Freq(instr,value,label)
 end
@@ -122,7 +122,7 @@ source(ch::SR7270Ampl, value::Real) = ask(ch.instr, "OA. $value")
 # frequency: if 0 or negative then just read
 function source(ch::SR7270Freq, value::Real)
 	if value < eps()
-		ch.value = ask(ch.instr, "FRQ.\n")
+		ch.value = ask(ch.instr, "FRQ.")
 	else
 		ch.value = round(1000.0*value)/1000.0
 		ask(ch.instr, "OF. $(ch.value)")
