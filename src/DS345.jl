@@ -26,7 +26,7 @@ function DS345sockread(sock::IO)
 end
 
 # constructor takes Prologix IP address and gpib address. Other parameters are named not positional
-function SR7270(addr::String, gpib::Int; func = -1, param::Dict = Dict(), name::String = "")
+function DS345(addr::String, gpib::Int; func = -1, param::Dict = Dict(), name::String = "")
 	sock = connect(addr, 1234)
 	if func < 0
 		write(sock,"FUNC?\n")
