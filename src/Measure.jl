@@ -110,6 +110,7 @@ include("Agilent34401a.jl")
 include("Keithley2400.jl")
 include("SR830.jl")
 include("SR7270.jl")
+include("DS345.jl")
 include("Virtual.jl")
 
 # user functions
