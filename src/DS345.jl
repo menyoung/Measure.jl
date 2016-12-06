@@ -37,11 +37,11 @@ function DS345(addr::String, gpib::Int; func = -1, param::Dict = Dict(), name::S
     warn("DS345 function 0=sine, 1=sq, 2=tri, 3=ramp, 4=noise, 5=arb; defaulting to 0.")
     write(sock,"FUNC 1\n")
   end
-	SR7270(addr, gpib, sock, func, param, name == "" ? "SRS DS345 gpib-ethernet $gpib" : name)
+	DS345(addr, gpib, sock, func, param, name == "" ? "SRS DS345 gpib-ethernet $gpib" : name)
 end
 
 function read(instr::DS345)
-  flush(sock)
+  flush(instr.sock)
 	msg = readavailable(instr.sock)
 	# store the status and overload bit strings as strings
 	# instr.param["stat"] = bits(msg[end-1])
@@ -93,7 +93,7 @@ function DS345AC(instr::DS345, value::Real, label::Label = Label("SRS DS345 AC a
 		value = ask(instr, "AMPL?")
 	else
 		value = round(1000.0*value)/1000.0
-		write(instr, "AMPL $value")
+		write(instr, "AMPL $value VP")
 	end
 	DS345Freq(instr,value,label)
 end
