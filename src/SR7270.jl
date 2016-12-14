@@ -1,6 +1,6 @@
 ### Signal Recovery 7270 concrete types and methods
 
-export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1, SR7270Input, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, source, measure
+export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1, SR7270Input, SR7270X2, SR7270Y2, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, source, measure
 
 type SR7270 <: SocketInstrument
 	addr::String # this is the IP address as a string
@@ -34,7 +34,7 @@ end
 function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict = Dict(), name::String = "")
 	sock = connect(addr, port)
 	if sens < 0
-		write(sock,"SEN.\n")
+		write(sock,"SEN2.\n") # TODO FIX THIS
 		sens = SR7270sockread(sock)
 	else
 		if sens > 1
@@ -45,7 +45,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 		write(sock,"SEN $sens_code\n")
 	end
 	if tc < 0
-		write(sock,"TC.\n")
+		write(sock,"TC1.\n") # TODO FIX THIS
 		tc = SR7270sockread(sock)
 	else
 		if tc > 1E5
@@ -53,7 +53,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 			tc = 1E5
 		end
 		tc_code = get_code(SR7270_tc_conv, tc)
-		viWrite(vi,"TC $tc_code\n")
+		write(sock,"TC $tc_code\n")
 	end
 	SR7270(addr, port, sock, sens, tc, param, name == "" ? "Sig Rec 7270 $addr" : name)
 end
@@ -167,6 +167,18 @@ type SR7270XY <: SR7270Input
 	label::Label
 end
 
+type SR7270X2 <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
+type SR7270Y2 <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
 function measure(ch::SR7270XY)
 	ch.value = ask(ch.instr, "XY.")
 end
@@ -175,14 +187,21 @@ function measure(ch::SR7270RP)
 end
 
 function measure(ch::SR7270X)
-	ch.value = ask(ch.instr, "X.")
+	ch.value = ask(ch.instr, "X1.") # TODO FIX THIS
 end
 function measure(ch::SR7270Y)
-	ch.value = ask(ch.instr, "Y.")
+	ch.value = ask(ch.instr, "Y1.") # TODO FIX THIS
 end
 function measure(ch::SR7270R)
 	ch.value = ask(ch.instr, "MAG.")
 end
 function measure(ch::SR7270P)
 	ch.value = ask(ch.instr, "PHA.")
+end
+
+function measure(ch::SR7270X2)
+	ch.value = ask(ch.instr, "X2.")
+end
+function measure(ch::SR7270Y2)
+	ch.value = ask(ch.instr, "Y2.")
 end
