@@ -1,6 +1,8 @@
 ### Signal Recovery 7270 concrete types and methods
 
-export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1, SR7270Input, SR7270X2, SR7270Y2, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, source, measure
+export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1
+export SR7270Input, SR7270X2, SR7270Y2, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, SR7270A1, SR7270A2
+export ource, measure
 
 type SR7270 <: SocketInstrument
 	addr::String # this is the IP address as a string
@@ -34,7 +36,7 @@ end
 function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict = Dict(), name::String = "")
 	sock = connect(addr, port)
 	if sens < 0
-		write(sock,"SEN2.\n") # TODO FIX THIS
+		write(sock,"SEN.\n") # TODO FIX THIS
 		sens = SR7270sockread(sock)
 	else
 		if sens > 1
@@ -45,7 +47,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 		write(sock,"SEN $sens_code\n")
 	end
 	if tc < 0
-		write(sock,"TC1.\n") # TODO FIX THIS
+		write(sock,"TC.\n") # TODO FIX THIS
 		tc = SR7270sockread(sock)
 	else
 		if tc > 1E5
@@ -96,7 +98,7 @@ type SR7270DAC1 <: SR7270Output
 end
 
 function SR7270DAC1(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 DAC1 output","V"))
-	ask(instr, "OA. $value")
+	ask(instr, "DAC. 1 $value")
 	SR7270Ampl(instr,value,label)
 end
 
@@ -179,18 +181,30 @@ type SR7270Y2 <: SR7270Input
 	label::Label
 end
 
+type SR7270A1 <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
+type SR7270A2 <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
 function measure(ch::SR7270XY)
-	ch.value = ask(ch.instr, "XY.")
+	ch.value = eval(ask(ch.instr, "XY."))
 end
 function measure(ch::SR7270RP)
-	ch.value = ask(ch.instr, "MP.")
+	ch.value = eval(ask(ch.instr, "MP."))
 end
 
 function measure(ch::SR7270X)
-	ch.value = ask(ch.instr, "X1.") # TODO FIX THIS
+	ch.value = ask(ch.instr, "X.") # TODO FIX THIS
 end
 function measure(ch::SR7270Y)
-	ch.value = ask(ch.instr, "Y1.") # TODO FIX THIS
+	ch.value = ask(ch.instr, "Y.") # TODO FIX THIS
 end
 function measure(ch::SR7270R)
 	ch.value = ask(ch.instr, "MAG.")
@@ -204,4 +218,11 @@ function measure(ch::SR7270X2)
 end
 function measure(ch::SR7270Y2)
 	ch.value = ask(ch.instr, "Y2.")
+end
+
+function measure(ch::SR7270A1)
+	ch.value = ask(ch.instr, "ADC1.")
+end
+function measure(ch::SR7270A2)
+	ch.value = ask(ch.instr, "ADC2.")
 end
