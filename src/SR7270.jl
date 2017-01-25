@@ -1,8 +1,9 @@
 ### Signal Recovery 7270 concrete types and methods
 
 export SR7270, SR7270Output, SR7270Ampl, SR7270Freq, SR7270DAC1
-export SR7270Input, SR7270X2, SR7270Y2, SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, SR7270A1, SR7270A2
-export ource, measure
+export SR7270Input, SR7270X2, SR7270Y2, SR7270XER, SR7270YER
+export SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, SR7270A1, SR7270A2
+export source, measure
 
 type SR7270 <: SocketInstrument
 	addr::String # this is the IP address as a string
@@ -36,7 +37,7 @@ end
 function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict = Dict(), name::String = "")
 	sock = connect(addr, port)
 	if sens < 0
-		write(sock,"SEN.\n") # TODO FIX THIS
+		write(sock,"SEN.\r\n\0") # TODO FIX THIS
 		sens = SR7270sockread(sock)
 	else
 		if sens > 1
@@ -44,10 +45,10 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 			sens = 1
 		end
 		sens_code = get_code(SR7270_sens_conv, sens, 1)
-		write(sock,"SEN $sens_code\n")
+		write(sock,"SEN $sens_code\r\n\0")
 	end
 	if tc < 0
-		write(sock,"TC.\n") # TODO FIX THIS
+		write(sock,"TC.\r\n\0") # TODO FIX THIS
 		tc = SR7270sockread(sock)
 	else
 		if tc > 1E5
@@ -55,7 +56,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 			tc = 1E5
 		end
 		tc_code = get_code(SR7270_tc_conv, tc)
-		write(sock,"TC $tc_code\n")
+		write(sock,"TC $tc_code\r\n\0")
 	end
 	SR7270(addr, port, sock, sens, tc, param, name == "" ? "Sig Rec 7270 $addr" : name)
 end
@@ -73,7 +74,7 @@ function read(instr::SR7270)
 end
 function write(instr::SR7270, msg::String)
   flush(instr.sock)
-	write(instr.sock,string(msg,"\n"))
+	write(instr.sock,string(msg,"\r\n\0"))
 	flush(instr.sock)
 end
 
@@ -99,7 +100,7 @@ end
 
 function SR7270DAC1(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 DAC1 output","V"))
 	ask(instr, "DAC. 1 $value")
-	SR7270Ampl(instr,value,label)
+	SR7270DAC1(instr,value,label)
 end
 
 function SR7270Ampl(instr::SR7270, value::Real, label::Label = Label("Sig Rec 7270 Osc Ampl","V"))
@@ -117,7 +118,7 @@ function SR7270Freq(instr::SR7270, value::Real = NaN, label::Label = Label("Sig 
 	SR7270Freq(instr,value,label)
 end
 
-source(ch::SR7270DAC1, value::Real) = ask(ch.instr, "DAC. 1 $value")
+source(ch::SR7270DAC1, value::Real) = ask(ch.instr, "DAC. 1 $(round(1000.0*value)/1000.0)")
 ### ref voltage Output
 source(ch::SR7270Ampl, value::Real) = ask(ch.instr, "OA. $value")
 # source(ch::SR7270Freq, value::Real) = write(ch.instr, "OF. $value")
@@ -163,6 +164,18 @@ type SR7270RP <: SR7270Input
 	label::Label
 end
 
+type SR7270XER <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
+type SR7270YER <: SR7270Input
+	instr::SR7270
+	value::Float64
+	label::Label
+end
+
 type SR7270XY <: SR7270Input
 	instr::SR7270
 	value::Tuple{Float64,Float64}
@@ -199,7 +212,12 @@ end
 function measure(ch::SR7270RP)
 	ch.value = eval(ask(ch.instr, "MP."))
 end
-
+function measure(ch::SR7270XER)
+	ch.value = ask(ch.instr, "XER") # integer output!
+end
+function measure(ch::SR7270YER)
+	ch.value = ask(ch.instr, "YER") # integer output!
+end
 function measure(ch::SR7270X)
 	ch.value = ask(ch.instr, "X.") # TODO FIX THIS
 end
