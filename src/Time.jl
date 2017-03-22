@@ -21,7 +21,7 @@ function source(ch::TimeOutput, value::Real)
 		ch.instr.t0 = time()
 	else
 		while value + ch.instr.t0 > time()
-			sleep(0.01)
+			sleep(0.001)
 		end
 	end
 end
