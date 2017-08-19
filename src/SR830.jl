@@ -2,7 +2,7 @@
 
 export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, source, measure
 
-type SR830 <: GpibInstrument
+struct SR830 <: GpibInstrument
 	vi::ViSession # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
@@ -57,13 +57,13 @@ end
 
 abstract SR830Output <: Output
 
-type SR830Ampl <: SR830Output
+struct SR830Ampl <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830Freq <: SR830Output
+struct SR830Freq <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
@@ -109,18 +109,21 @@ end
 
 ## types for DAC output 1
 
-type SR830DAC1 <: SR830Output
+mutable struct SR830DAC{T} <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-function SR830DAC1(instr::SR830, value::Real, label::Label = Label("SR830 DAC1 output","V"))
-	write(instr, "AUXV 1 $value")
-	SR830DAC1(instr,value,label)
+function SR830DAC(instr::SR830, chnum, value::Real, label::Label = Label("SR830 DAC output","V"))
+	write(instr, "AUXV $chnum $(round(1000.0*value)/1000.0)")
+	SR830DAC{chnum}(instr,value,label)
 end
 
-source(ch::SR830DAC1, value::Real) = ask(ch.instr, "AUXV 1 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{1}, value::Real) = ask(ch.instr, "AUXV 1 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{2}, value::Real) = ask(ch.instr, "AUXV 2 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{3}, value::Real) = ask(ch.instr, "AUXV 3 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{4}, value::Real) = ask(ch.instr, "AUXV 4 $(round(1000.0*value)/1000.0)")
 
 abstract SR830Input <: Input
 
