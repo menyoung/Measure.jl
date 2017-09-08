@@ -2,7 +2,7 @@
 
 export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, source, measure
 
-type SR830 <: GpibInstrument
+struct SR830 <: GpibInstrument
 	vi::ViSession # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
@@ -20,7 +20,7 @@ function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::
 	# default parameters: -1 means read the current state and legislate here.
 	if sens < 0
 		viWrite(vi,"SENS?")
-		sens_code = viRead(vi)
+		sens_code = parse(String(viRead(vi)))
 		sens = SR830_sens_conv(sens_code)
 	else
 		if sens > 1
@@ -32,7 +32,7 @@ function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::
 	end
 	if res < 0
 		viWrite(vi,"RMOD?")
-		res = viRead(vi)
+		res = parse(String(viRead(vi)))
 	else
 		if !(res in 0:2)
 			warn("SR830 $rsrc reserve must be 0 1 or 2. Was given $res. Setting to normal (1).")
@@ -42,7 +42,7 @@ function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::
 	end
 	if tc < 0
 		viWrite(vi,"OFLT?")
-		tc_code = viRead(vi)
+		tc_code = parse(String(viRead(vi)))
 		tc = SR830_tc_conv(tc_code)
 	else
 		if tc > 30000
@@ -57,13 +57,13 @@ end
 
 abstract SR830Output <: Output
 
-type SR830Ampl <: SR830Output
+struct SR830Ampl <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830Freq <: SR830Output
+struct SR830Freq <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
@@ -106,6 +106,24 @@ function source(ch::SR830Freq, value::Real)
 		write(ch.instr, "FREQ $value")
 	end
 end
+
+## types for DAC output 1
+
+mutable struct SR830DAC{T} <: SR830Output
+	instr::SR830
+	value::Float64
+	label::Label
+end
+
+function SR830DAC(instr::SR830, chnum, value::Real, label::Label = Label("SR830 DAC output","V"))
+	write(instr, "AUXV $chnum $(round(1000.0*value)/1000.0)")
+	SR830DAC{chnum}(instr,value,label)
+end
+
+source(ch::SR830DAC{1}, value::Real) = ask(ch.instr, "AUXV 1 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{2}, value::Real) = ask(ch.instr, "AUXV 2 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{3}, value::Real) = ask(ch.instr, "AUXV 3 $(round(1000.0*value)/1000.0)")
+source(ch::SR830DAC{4}, value::Real) = ask(ch.instr, "AUXV 4 $(round(1000.0*value)/1000.0)")
 
 abstract SR830Input <: Input
 

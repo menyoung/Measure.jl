@@ -30,6 +30,11 @@ abstract BufferedInput <: Input
 abstract BufferedOutput <: Output
 abstract PID <: Signal
 
+"$(SIGNATURES) convenience functor for source(Signal s, value)"
+(s::Output)(v::Real) = source(s, v)
+"$(SIGNATURES) convenience functor for measure(Signal s)"
+(s::Input)() = measure(s)
+
 """
 $(TYPEDEF)
 $(FIELDS)
