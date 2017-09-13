@@ -5,10 +5,7 @@ mutable struct DS345 <: SocketInstrument
 	addr::String # this is the Prologix IP address as a string
 	gpib::Int # this is the gpib instrument address
 	sock::IO # the IO stream object of the socket
-	# res::Int # high reserve = 0 normal = 1 low noise = 2
 	func::Int # the function 0=sine, 1=sq, 2=tri, 3=ramp, 4=noise, 5=arb
-	# sens::Float64 # sensitivity in V
-	# tc::Float64 # time constant in s
 	param::Dict # dictionary of parameters (not required to use)
 	# some possible parameters:
 	# stat::String # the status byte as string, updated at every read

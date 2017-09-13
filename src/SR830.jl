@@ -7,7 +7,7 @@ mutable struct SR830 <: GpibInstrument
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
 	tc::Float64 # time constant in s
-	name::AbstractString
+	name::String
 end
 
 # converting back and forth between codes and values for sensitivity/range/time constant/etc
@@ -15,7 +15,7 @@ SR830_sens_conv(sens_code) = signif((10 ^ floor((sens_code + 1) / 3)) * ((sens_c
 SR830_tc_conv(tc_code) = (10 ^ floor(tc_code/ 2) * ((tc_code % 2 == 1)? 3 : 1)) * 10e-6
 
 # constructor takes VISA resource manager and resource rsrc. Other parameters are named not positional
-function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::AbstractString = "")
+function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::String = "")
 	vi = viOpen(rm, rsrc)
 	# default parameters: -1 means read the current state and legislate here.
 	if sens < 0

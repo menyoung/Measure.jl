@@ -13,8 +13,8 @@ end
 
 mutable struct Agilent34401aVDC <: BufferedInput
 	instr::Agilent34401a
-	label::Label
 	value::Float64
+	label::Label
 end
 
 function measure(s::Agilent34401aVDC)
