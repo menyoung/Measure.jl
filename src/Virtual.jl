@@ -3,45 +3,45 @@
 export VirtualOutput, DependentOutput, MathInput
 export source, load, fire, measure
 
-type DependentOutput <: Output
-	ch::Output
+mutable struct DependentOutput <: Output
+	s::Output
 	f::Function
 	value::Float64
 	label::Label
 end
 
-DependentOutput(ch::Output, f::Function, label::Label = Label("Unnamed Dependent","")) = DependentOutput(ch, f, f(), label)
+DependentOutput(s::Output, f::Function, label::Label = Label("Unnamed Dependent","")) = DependentOutput(s, f, f(), label)
 
-function source(ch::DependentOutput, value::Real)
-	ch.value = ch.f()
-	source(ch.ch, ch.value)
+function source(s::DependentOutput, value::Real)
+	s.value = s.f()
+	source(s.s, s.value)
 end
 
-type VirtualOutput <: BufferedOutput
-	ch0::Array{DependentOutput,1}
+mutable struct VirtualOutput <: BufferedOutput
+	s0::Array{DependentOutput,1}
 	value0::Float64 # value is always the 'real' value, so value0 is for loading a buffer to fire.
 	value::Float64
 	label::Label
 end
 
-VirtualOutput(ch::Array{DependentOutput,1}, value, label::Label = Label("Unnamed Virtual","")) = VirtualOutput(ch, value, value, label)
+VirtualOutput(s::Array{DependentOutput,1}, value, label::Label = Label("Unnamed Virtual","")) = VirtualOutput(s, value, value, label)
 
-function source(ch::VirtualOutput, value::Real)
-	ch.value0 = value
-	ch.value = value
-	map(ch.ch0) do ch1
-		source(ch1, ch.value)
+function source(s::VirtualOutput, value::Real)
+	s.value0 = value
+	s.value = value
+	map(s.s0) do s1
+		source(s1, s.value)
 	end
 end
 
-function load(ch::VirtualOutput, value::Real)
-	ch.value0 = value
+function load(s::VirtualOutput, value::Real)
+	s.value0 = value
 end
 
-function fire(ch::VirtualOutput)
-	ch.value = value0
-	map(ch.ch0) do ch1
-		source(ch1, ch.value)
+function fire(s::VirtualOutput)
+	s.value = value0
+	map(s.s0) do s1
+		source(s1, s.value)
 	end
 end
 
@@ -49,7 +49,7 @@ end
 $(TYPEDEF)
 $(FIELDS)
 """
-type MathInput <: Input
+mutable struct MathInput <: Input
 	f::Function
 	value
 	label::Label

@@ -2,7 +2,7 @@
 
 export SR830, SR830Output, SR830Ampl, SR830Freq, SR830Input, SR830X, SR830Y, SR830R, SR830P, SR830XY, SR830RP, source, measure
 
-struct SR830 <: GpibInstrument
+mutable struct SR830 <: GpibInstrument
 	vi::ViSession # this is the GpibInstrument object!
 	sens::Float64 # sensitivity in V
 	res::Int # high reserve = 0 normal = 1 low noise = 2
@@ -55,15 +55,15 @@ function SR830(rm::ViSession, rsrc::String; sens = -1, res = -1, tc = -1, name::
 	SR830(vi, sens, res, tc, name == "" ? "SR830 $rsrc" : name)
 end
 
-abstract SR830Output <: Output
+abstract type SR830Output <: Output end
 
-struct SR830Ampl <: SR830Output
+mutable struct SR830Ampl <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-struct SR830Freq <: SR830Output
+mutable struct SR830Freq <: SR830Output
 	instr::SR830
 	value::Float64
 	label::Label
@@ -73,7 +73,7 @@ function SR830Ampl(instr::SR830, value::Real = NaN, label::Label = Label("Lockin
 	if isnan(value)
 		value = ask(instr, "SLVL?")
 	else
-		write(ch.instr, "SLVL $value")
+		write(s.instr, "SLVL $value")
 	end
 	SR830Ampl(instr,value,label)
 end
@@ -82,28 +82,28 @@ function SR830Freq(instr::SR830, value::Real = NaN, label::Label = Label("Lockin
 	if isnan(value)
 		value = ask(instr, "FREQ?")
 	else
-		write(ch.instr, "FREQ $value")
+		write(s.instr, "FREQ $value")
 	end
 	SR830Freq(instr,value,label)
 end
 
 ### ref voltage Output
 # if 0 or negative then just read
-function source(ch::SR830Ampl, value::Real)
+function source(s::SR830Ampl, value::Real)
 	if value < eps()
-		ch.value = ask(ch.instr, "SLVL?")
+		s.value = ask(s.instr, "SLVL?")
 	else
-		ch.value = value
-		write(ch.instr, "SLVL $value")
+		s.value = value
+		write(s.instr, "SLVL $value")
 	end
 end
 
-function source(ch::SR830Freq, value::Real)
+function source(s::SR830Freq, value::Real)
 	if value < eps()
-		ch.value = ask(ch.instr, "FREQ?")
+		s.value = ask(s.instr, "FREQ?")
 	else
-		ch.value = value
-		write(ch.instr, "FREQ $value")
+		s.value = value
+		write(s.instr, "FREQ $value")
 	end
 end
 
@@ -115,70 +115,70 @@ mutable struct SR830DAC{T} <: SR830Output
 	label::Label
 end
 
-function SR830DAC(instr::SR830, chnum, value::Real, label::Label = Label("SR830 DAC output","V"))
-	write(instr, "AUXV $chnum $(round(1000.0*value)/1000.0)")
-	SR830DAC{chnum}(instr,value,label)
+function SR830DAC(instr::SR830, snum, value::Real, label::Label = Label("SR830 DAC output","V"))
+	write(instr, "AUXV $snum $(round(1000.0*value)/1000.0)")
+	SR830DAC{snum}(instr,value,label)
 end
 
-source(ch::SR830DAC{1}, value::Real) = ask(ch.instr, "AUXV 1 $(round(1000.0*value)/1000.0)")
-source(ch::SR830DAC{2}, value::Real) = ask(ch.instr, "AUXV 2 $(round(1000.0*value)/1000.0)")
-source(ch::SR830DAC{3}, value::Real) = ask(ch.instr, "AUXV 3 $(round(1000.0*value)/1000.0)")
-source(ch::SR830DAC{4}, value::Real) = ask(ch.instr, "AUXV 4 $(round(1000.0*value)/1000.0)")
+source(s::SR830DAC{1}, value::Real) = ask(s.instr, "AUXV 1 $(round(1000.0*value)/1000.0)")
+source(s::SR830DAC{2}, value::Real) = ask(s.instr, "AUXV 2 $(round(1000.0*value)/1000.0)")
+source(s::SR830DAC{3}, value::Real) = ask(s.instr, "AUXV 3 $(round(1000.0*value)/1000.0)")
+source(s::SR830DAC{4}, value::Real) = ask(s.instr, "AUXV 4 $(round(1000.0*value)/1000.0)")
 
-abstract SR830Input <: Input
+abstract type SR830Input <: Input end
 
-type SR830X <: SR830Input
+mutable struct SR830X <: SR830Input
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830Y <: SR830Input
+mutable struct SR830Y <: SR830Input
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830R <: SR830Input
+mutable struct SR830R <: SR830Input
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830P <: SR830Input
+mutable struct SR830P <: SR830Input
 	instr::SR830
 	value::Float64
 	label::Label
 end
 
-type SR830RP <: SR830Input
+mutable struct SR830RP <: SR830Input
 	instr::SR830
 	value::Tuple{Float64,Float64}
 	label::Label
 end
 
-type SR830XY <: SR830Input
+mutable struct SR830XY <: SR830Input
 	instr::SR830
 	value::Tuple{Float64,Float64}
 	label::Label
 end
 
-function measure(ch::SR830XY)
-	ch.value = ask(ch.instr, "SNAP? 1,2")
+function measure(s::SR830XY)
+	s.value = ask(s.instr, "SNAP? 1,2")
 end
-function measure(ch::SR830RP)
-	ch.value = ask(ch.instr, "SNAP? 3,4")
+function measure(s::SR830RP)
+	s.value = ask(s.instr, "SNAP? 3,4")
 end
 
-function measure(ch::SR830X)
-	ch.value = ask(ch.instr, "OUTP? 1")
+function measure(s::SR830X)
+	s.value = ask(s.instr, "OUTP? 1")
 end
-function measure(ch::SR830Y)
-	ch.value = ask(ch.instr, "OUTP? 2")
+function measure(s::SR830Y)
+	s.value = ask(s.instr, "OUTP? 2")
 end
-function measure(ch::SR830R)
-	ch.value = ask(ch.instr, "OUTP? 3")
+function measure(s::SR830R)
+	s.value = ask(s.instr, "OUTP? 3")
 end
-function measure(ch::SR830P)
-	ch.value = ask(ch.instr, "OUTP? 4")
+function measure(s::SR830P)
+	s.value = ask(s.instr, "OUTP? 4")
 end

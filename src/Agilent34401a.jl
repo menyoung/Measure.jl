@@ -2,7 +2,7 @@
 
 export Agilent34401a, Agilent34401aVDC, measure, trigget, fetch
 
-type Agilent34401a <: GpibInstrument
+mutable struct Agilent34401a <: GpibInstrument
 	vi::ViSession 	# this is the GpibInstrument object!
 	filter::Int 	# filter speed
 	range::Float64 	# 0 for autorange
@@ -11,16 +11,16 @@ type Agilent34401a <: GpibInstrument
 	name::AbstractString
 end
 
-type Agilent34401aVDC <: BufferedInput
+mutable struct Agilent34401aVDC <: BufferedInput
 	instr::Agilent34401a
 	label::Label
 	value::Float64
 end
 
-function measure(ch::Agilent34401aVDC)
-	ch.value = ask(ch.instr, "MEAS:VOLT:DC?")
+function measure(s::Agilent34401aVDC)
+	s.value = ask(s.instr, "MEAS:VOLT:DC?")
 end
-trigger(ch::Agilent34401aVDC) = write(ch.instr, "INIT")
-function fetch(ch::Agilent34401aVDC)
-	ch.value = ask(ch.instr, "FETC?")
+trigger(s::Agilent34401aVDC) = write(s.instr, "INIT")
+function fetch(s::Agilent34401aVDC)
+	s.value = ask(s.instr, "FETC?")
 end

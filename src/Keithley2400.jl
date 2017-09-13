@@ -3,11 +3,11 @@
 export Keithely2400, Keithley2400Vb, Keithley2400Ib, Keithley24004W, Keithley2400Vsrc, Keithley2400Imeas
 export source, measure, trigger, fetch
 
-abstract Keithley2400 <: GpibInstrument
+abstract type Keithley2400 <: GpibInstrument end
 
-type Keithley2400Vb <: Keithley2400 # source voltage, measure current
+mutable struct Keithley2400Vb <: Keithley2400 # source voltage, measure current
 	vi::ViSession 	# this is the GpibInstrument object!
-	range::Float64 	# output range
+	range::Float64 	# output voltage range
 	cmpl::Float64 	# compliance current
 	name::String
 end
@@ -45,19 +45,19 @@ function Keithley2400Vb(rm::ViSession, rsrc::String; range = -1, cmpl = -1, name
 	Keithley2400Vb(vi, range, cmpl, name == "" ? rsrc : name)
 end
 
-type Keithley2400Ib <: Keithley2400 # source current, measure voltage
+mutable struct Keithley2400Ib <: Keithley2400 # source current, measure voltage
 	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
-type Keithley24004W <: Keithley2400 # 4-wire ohms
+mutable struct Keithley24004W <: Keithley2400 # 4-wire ohms
 	vi::ViSession 	# this is the GpibInstrument object!
 	range::Float64
 	cmpl::Float64
 end
 
-type Keithley2400Vsrc <: Output
+mutable struct Keithley2400Vsrc <: Output
 	instr::Keithley2400Vb
 	label::Label
 	value::Float64
@@ -74,24 +74,24 @@ function Keithley2400Vsrc(instr::Keithley2400Vb, value::Real = NaN, step::Real =
 		isnan(delay) ? 0 : delay)
 end
 
-function source(ch::Keithley2400Vsrc, value::Real)
+function source(s::Keithley2400Vsrc, value::Real)
 	timer = Timing()
 	timeOut = TimeOutput(timer)
 	timeIn = TimeInput(timer)
 	time = 0.0
-	while (abs(value - ch.value) > ch.step)
-		time += ch.delay
+	while (abs(value - s.value) > s.step)
+		time += s.delay
 		source(timeOut, time)
-		ch.value += (value > ch.value) ? ch.step : -ch.step
-		write(ch.instr, "SOUR:VOLT $(ch.value)")
+		s.value += (value > s.value) ? s.step : -s.step
+		write(s.instr, "SOUR:VOLT $(s.value)")
 	end
-	time += ch.delay
+	time += s.delay
 	source(timeOut, time)
-	ch.value = value
-	write(ch.instr, "SOUR:VOLT $(ch.value)")
+	s.value = value
+	write(s.instr, "SOUR:VOLT $(s.value)")
 end
 
-type Keithley2400Imeas <: BufferedInput
+mutable struct Keithley2400Imeas <: BufferedInput
 	instr::Keithley2400Vb
 	label::Label
 	value::Float64
@@ -104,10 +104,10 @@ function Keithley2400Imeas(instr::Keithley2400Vb, label::Label = Label("Unnamed 
 		ask(instr, "READ?"))
 end
 
-function measure(ch::Keithley2400Imeas)
-	ch.value = ask(ch.instr, "READ?")
+function measure(s::Keithley2400Imeas)
+	s.value = ask(s.instr, "READ?")
 end
-trigger(ch::Keithley2400Imeas) = write(ch.instr, "INIT")
-function fetch(ch::Keithley2400Imeas)
-	ch.value = ask(ch.instr, "FETC?")
+trigger(s::Keithley2400Imeas) = write(s.instr, "INIT")
+function fetch(s::Keithley2400Imeas)
+	s.value = ask(s.instr, "FETC?")
 end

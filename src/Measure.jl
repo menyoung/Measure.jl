@@ -24,11 +24,11 @@ value(s::Signal) = s.value
 "$(SIGNATURES) returns `s.label` of Label type, for Signal s"
 label(s::Signal) = s.label
 
-abstract Input <: Signal
-abstract Output <: Signal
-abstract BufferedInput <: Input
-abstract BufferedOutput <: Output
-abstract PID <: Signal
+abstract type Input <: Signal end
+abstract type Output <: Signal end
+abstract type BufferedInput <: Input end
+abstract type BufferedOutput <: Output end
+abstract type PID <: Signal end
 
 "$(SIGNATURES) convenience functor for source(Signal s, value)"
 (s::Output)(v::Real) = source(s, v)
@@ -39,7 +39,7 @@ abstract PID <: Signal
 $(TYPEDEF)
 $(FIELDS)
 """
-type Label
+struct Label
 	name::String
 	unit::String
 end
@@ -49,7 +49,7 @@ $(TYPEDEF)
 Concrete types must either have `.name` attribute,
 or supply its own name method.
 """
-abstract Instrument
+abstract type Instrument end
 "$(SIGNATURES) returns `instr.name`"
 name(instr::Instrument) = instr.name
 
@@ -61,12 +61,12 @@ name(instr::Instrument) = instr.name
 $(TYPEDEF) Concrete types must have `.vi` attribute,
 which is the ViSession object (the "handle") obtained from resource manager.
 """
-abstract VisaInstrument <: Instrument
+abstract type VisaInstrument <: Instrument end
 """
 $(TYPEDEF) Concrete types must have `.vi` attribute,
 which is the ViSession object (the "handle") obtained from resource manager.
 """
-abstract GpibInstrument <: VisaInstrument
+abstract type GpibInstrument <: VisaInstrument end
 
 read(instr::VisaInstrument) = parse(String(viRead(instr.vi)))
 write(instr::VisaInstrument, msg::String) = viWrite(instr.vi,msg)
@@ -80,7 +80,7 @@ end
 $(TYPEDEF) Concrete types must have attributes: address `.addr`,
 port number `.port`, and socket IO stream object `.sock`.
 """
-abstract SocketInstrument <: Instrument
+abstract type SocketInstrument <: Instrument end
 
 # need IP address, port number, and stream object
 addr(instr::SocketInstrument) = instr.addr

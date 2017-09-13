@@ -4,7 +4,7 @@
 # convenience functions for adding user comments
 # package and save data
 
-type Experiment
+struct Experiment
 	instruments
 	channels
 end

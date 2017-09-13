@@ -5,7 +5,7 @@ export SR7270Input, SR7270X2, SR7270Y2, SR7270XER, SR7270YER
 export SR7270X, SR7270Y, SR7270R, SR7270P, SR7270XY, SR7270RP, SR7270A1, SR7270A2
 export source, measure
 
-type SR7270 <: SocketInstrument
+mutable struct SR7270 <: SocketInstrument
 	addr::String # this is the IP address as a string
 	port::Int # this is the port number
 	sock::IO # the IO stream object of the socket
@@ -78,21 +78,21 @@ function write(instr::SR7270, msg::String)
 	flush(instr.sock)
 end
 
-abstract SR7270Output <: Output
+abstract type SR7270Output <: Output end
 
-type SR7270Ampl <: SR7270Output
+mutable struct SR7270Ampl <: SR7270Output
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270Freq <: SR7270Output
+mutable struct SR7270Freq <: SR7270Output
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270DAC1 <: SR7270Output
+mutable struct SR7270DAC1 <: SR7270Output
 	instr::SR7270
 	value::Float64
 	label::Label
@@ -118,129 +118,129 @@ function SR7270Freq(instr::SR7270, value::Real = NaN, label::Label = Label("Sig 
 	SR7270Freq(instr,value,label)
 end
 
-source(ch::SR7270DAC1, value::Real) = ask(ch.instr, "DAC. 1 $(round(1000.0*value)/1000.0)")
+source(s::SR7270DAC1, value::Real) = ask(s.instr, "DAC. 1 $(round(1000.0*value)/1000.0)")
 ### ref voltage Output
-source(ch::SR7270Ampl, value::Real) = ask(ch.instr, "OA. $value")
-# source(ch::SR7270Freq, value::Real) = write(ch.instr, "OF. $value")
+source(s::SR7270Ampl, value::Real) = ask(s.instr, "OA. $value")
+# source(s::SR7270Freq, value::Real) = write(s.instr, "OF. $value")
 # frequency: if 0 or negative then just read
-function source(ch::SR7270Freq, value::Real)
+function source(s::SR7270Freq, value::Real)
 	if value < eps()
-		ch.value = ask(ch.instr, "FRQ.")
+		s.value = ask(s.instr, "FRQ.")
 	else
-		ch.value = round(1000.0*value)/1000.0
-		ask(ch.instr, "OF. $(ch.value)")
+		s.value = round(1000.0*value)/1000.0
+		ask(s.instr, "OF. $(s.value)")
 	end
 end
 
-abstract SR7270Input <: Input
+abstract type SR7270Input <: Input end
 
-type SR7270X <: SR7270Input
+mutable struct SR7270X <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270Y <: SR7270Input
+mutable struct SR7270Y <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270R <: SR7270Input
+mutable struct SR7270R <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270P <: SR7270Input
+mutable struct SR7270P <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270RP <: SR7270Input
+mutable struct SR7270RP <: SR7270Input
 	instr::SR7270
 	value::Tuple{Float64,Float64}
 	label::Label
 end
 
-type SR7270XER <: SR7270Input
+mutable struct SR7270XER <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270YER <: SR7270Input
+mutable struct SR7270YER <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270XY <: SR7270Input
+mutable struct SR7270XY <: SR7270Input
 	instr::SR7270
 	value::Tuple{Float64,Float64}
 	label::Label
 end
 
-type SR7270X2 <: SR7270Input
+mutable struct SR7270X2 <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270Y2 <: SR7270Input
+mutable struct SR7270Y2 <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270A1 <: SR7270Input
+mutable struct SR7270A1 <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-type SR7270A2 <: SR7270Input
+mutable struct SR7270A2 <: SR7270Input
 	instr::SR7270
 	value::Float64
 	label::Label
 end
 
-function measure(ch::SR7270XY)
-	ch.value = eval(ask(ch.instr, "XY."))
+function measure(s::SR7270XY)
+	s.value = eval(ask(s.instr, "XY."))
 end
-function measure(ch::SR7270RP)
-	ch.value = eval(ask(ch.instr, "MP."))
+function measure(s::SR7270RP)
+	s.value = eval(ask(s.instr, "MP."))
 end
-function measure(ch::SR7270XER)
-	ch.value = ask(ch.instr, "XER") # integer output!
+function measure(s::SR7270XER)
+	s.value = ask(s.instr, "XER") # integer output!
 end
-function measure(ch::SR7270YER)
-	ch.value = ask(ch.instr, "YER") # integer output!
+function measure(s::SR7270YER)
+	s.value = ask(s.instr, "YER") # integer output!
 end
-function measure(ch::SR7270X)
-	ch.value = ask(ch.instr, "X.") # TODO FIX THIS
+function measure(s::SR7270X)
+	s.value = ask(s.instr, "X.") # TODO FIX THIS
 end
-function measure(ch::SR7270Y)
-	ch.value = ask(ch.instr, "Y.") # TODO FIX THIS
+function measure(s::SR7270Y)
+	s.value = ask(s.instr, "Y.") # TODO FIX THIS
 end
-function measure(ch::SR7270R)
-	ch.value = ask(ch.instr, "MAG.")
+function measure(s::SR7270R)
+	s.value = ask(s.instr, "MAG.")
 end
-function measure(ch::SR7270P)
-	ch.value = ask(ch.instr, "PHA.")
-end
-
-function measure(ch::SR7270X2)
-	ch.value = ask(ch.instr, "X2.")
-end
-function measure(ch::SR7270Y2)
-	ch.value = ask(ch.instr, "Y2.")
+function measure(s::SR7270P)
+	s.value = ask(s.instr, "PHA.")
 end
 
-function measure(ch::SR7270A1)
-	ch.value = ask(ch.instr, "ADC1.")
+function measure(s::SR7270X2)
+	s.value = ask(s.instr, "X2.")
 end
-function measure(ch::SR7270A2)
-	ch.value = ask(ch.instr, "ADC2.")
+function measure(s::SR7270Y2)
+	s.value = ask(s.instr, "Y2.")
+end
+
+function measure(s::SR7270A1)
+	s.value = ask(s.instr, "ADC1.")
+end
+function measure(s::SR7270A2)
+	s.value = ask(s.instr, "ADC2.")
 end

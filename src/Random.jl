@@ -1,14 +1,20 @@
-### random.jl a fake input channel that just reads random numbers.
+### Random.jl a fake input channel that just reads random numbers.
 
 export RandomInput
 
-type RandomInput <: Input
-	value::Float64
+mutable struct RandomInput{T} <: Input where T <: Number
+	value::T
 	label::Label
 end
 
-RandomInput() = RandomInput(rand(),Label("Random Signal","au"))
+RandomInput() = RandomInput{Float64}(rand(),Label("Random Signal","au"))
 
-measure(ch::RandomInput) = ch.value = rand()
-trigger(ch::RandomInput) = ch.value = rand()
-fetch(ch::RandomInput) = ch.value
+function measure(s::RandomInput{T}) where T <: Real
+	s.value = rand()
+end
+
+function trigger(s::RandomInput{T}) where T <: Real
+	s.value = rand()
+end
+
+fetch(s::RandomInput{T}) = value(s)

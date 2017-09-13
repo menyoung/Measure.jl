@@ -5,33 +5,33 @@
 export Timing, TimeOutput, TimeInput
 export source, measure
 
-type Timing <: Instrument
+mutable struct Timing <: Instrument
 	t0::Float64
 	name::String
 end
 
 Timing() = Timing(time(), "Timing")
 
-type TimeOutput <: Output
+struct TimeOutput <: Output
 	instr::Timing
 end
 
-function source(ch::TimeOutput, value::Real)
+function source(s::TimeOutput, value::Real)
 	if value < eps()
-		ch.instr.t0 = time()
+		s.instr.t0 = time()
 	else
-		while value + ch.instr.t0 > time()
+		while value + s.instr.t0 > time()
 			sleep(0.001)
 		end
 	end
 end
-value(ch::TimeOutput) = time() - ch.instr.t0
-label(ch::TimeOutput) = "Output Timing"
+value(s::TimeOutput) = time() - s.instr.t0
+label(s::TimeOutput) = "Output Timing"
 
-type TimeInput <: Input
+struct TimeInput <: Input
 	instr::Timing
 end
 
-measure(ch::TimeInput) = time() - ch.instr.t0
-value(ch::TimeInput) = time() - ch.instr.t0
-label(ch::TimeInput) = "Timing Reading"
+measure(s::TimeInput) = time() - s.instr.t0
+value(s::TimeInput) = time() - s.instr.t0
+label(s::TimeInput) = "Timing Reading"
