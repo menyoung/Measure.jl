@@ -46,6 +46,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 		end
 		sens_code = get_code(SR7270_sens_conv, sens, 1)
 		write(sock,"SEN $sens_code\r\n\0")
+		SR7270sockread(sock)
 	end
 	if tc < 0
 		write(sock,"TC.\r\n\0") # TODO FIX THIS
@@ -57,6 +58,7 @@ function SR7270(addr::String, port::Int = 50000; sens = -1, tc = -1, param::Dict
 		end
 		tc_code = get_code(SR7270_tc_conv, tc)
 		write(sock,"TC $tc_code\r\n\0")
+		SR7270sockread(sock)
 	end
 	SR7270(addr, port, sock, sens, tc, param, name == "" ? "Sig Rec 7270 $addr" : name)
 end
