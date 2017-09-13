@@ -2,7 +2,7 @@
 
 export RandomInput
 
-mutable struct RandomInput{T} <: Input where T <: Number
+mutable struct RandomInput{T} <: Input where T <: Any
 	value::T
 	label::Label
 end
@@ -17,4 +17,4 @@ function trigger(s::RandomInput{T}) where T <: Real
 	s.value = rand()
 end
 
-fetch(s::RandomInput{T}) = value(s)
+fetch(s::RandomInput{T}) where {T<:Any} = value(s)

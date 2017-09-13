@@ -1,7 +1,7 @@
 ### SRS DS345 concrete types and methods. This is a temporary solution for use with Prologix GPIB-Ethernet.
 export DS345, DS345Output, DS345Freq, DS345AC, DS345DC, source
 
-type DS345 <: SocketInstrument
+mutable struct DS345 <: SocketInstrument
 	addr::String # this is the Prologix IP address as a string
 	gpib::Int # this is the gpib instrument address
 	sock::IO # the IO stream object of the socket
@@ -52,13 +52,14 @@ function read(instr::DS345)
 	parse(String(msg[1:search(msg,'\n')]))
 	# there are three termination characters...
 end
+
 function write(instr::DS345, msg::String)
   flush(instr.sock)
 	write(instr.sock,string(msg,"\n"))
 	flush(instr.sock)
 end
 
-abstract DS345Output <: Output
+abstract type DS345Output <: Output end
 
 type DS345Freq <: DS345Output
 	instr::DS345

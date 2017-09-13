@@ -16,7 +16,7 @@ $(TYPEDEF)
 Concrete types must either have .value and .label attributes,
 or supply its own value(s) and label(s) evaluation methods.
 """
-abstract Signal
+abstract type Signal end
 
 "$(SIGNATURES) returns `s.value` whch amounts to lazy evaluation
 (no instrument calls) of Signal s"
@@ -29,11 +29,6 @@ abstract type Output <: Signal end
 abstract type BufferedInput <: Input end
 abstract type BufferedOutput <: Output end
 abstract type PID <: Signal end
-
-"$(SIGNATURES) convenience functor for source(Signal s, value)"
-(s::Output)(v::Real) = source(s, v)
-"$(SIGNATURES) convenience functor for measure(Signal s)"
-(s::Input)() = measure(s)
 
 """
 $(TYPEDEF)
